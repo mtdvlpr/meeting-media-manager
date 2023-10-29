@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'url'
 import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { extname, join, basename, resolve } from 'upath'
-import { FadeOutType, VideoFile } from '~~/types'
+import type { FadeOutType, VideoFile } from '~~/types'
 
 export async function getSongs() {
   const store = useMediaStore()

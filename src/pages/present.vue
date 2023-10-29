@@ -38,7 +38,7 @@
 import { useRouteQuery } from '@vueuse/router'
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import type { Participant } from '@zoomus/websdk/embedded'
-import { ZoomPrefs } from '~~/types'
+import type { ZoomPrefs } from '~~/types'
 
 const date = useRouteQuery<string>('date', '')
 useHead({

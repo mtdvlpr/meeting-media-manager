@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { useIpcRendererOn } from '@vueuse/electron'
 import type { Participant } from '@zoomus/websdk/embedded'
-import { ObsPrefs } from '~~/types'
+import type { ObsPrefs } from '~~/types'
 
 defineProps<{
   participant: Participant | null

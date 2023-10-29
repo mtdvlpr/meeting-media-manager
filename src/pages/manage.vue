@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { existsSync, readdirSync } from 'fs-extra'
 import { extname, join } from 'upath'
-import { DateFormat, LocalFile, MeetingFile } from '~~/types'
+import type { DateFormat, LocalFile, MeetingFile } from '~~/types'
 
 const { t } = useI18n()
 const date = computed(() => useRoute().query.date as string)

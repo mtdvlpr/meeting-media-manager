@@ -65,7 +65,7 @@
   </v-col>
 </template>
 <script setup lang="ts">
-import { VOtpInputRef } from '~~/types'
+import type { VOtpInputRef } from '~~/types'
 
 const props = defineProps<{
   modelValue: string

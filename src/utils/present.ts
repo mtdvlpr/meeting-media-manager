@@ -1,8 +1,8 @@
 import { pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { join, basename } from 'upath'
-import { ShortcutScope } from './../../types/electron.d'
-import {
+import type { ShortcutScope } from './../../types/electron.d'
+import type {
   MediaPrefs,
   ScreenInfo,
   MediaWinOptions,

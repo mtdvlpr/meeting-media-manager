@@ -1,4 +1,4 @@
-import { Shortcut } from '~~/types'
+import type { Shortcut } from '~~/types'
 
 interface Screen {
   id: number

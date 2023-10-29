@@ -13,7 +13,7 @@
   </TreeView>
 </template>
 <script setup lang="ts">
-import { CongFile } from '~~/types'
+import type { CongFile } from '~~/types'
 type TreeObj = Record<
   string,
   {

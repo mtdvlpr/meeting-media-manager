@@ -1,4 +1,4 @@
-import { Notification } from '~~/types'
+import type { Notification } from '~~/types'
 
 export function notify(
   message: string,

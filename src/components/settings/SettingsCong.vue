@@ -92,7 +92,7 @@
   </v-form>
 </template>
 <script setup lang="ts">
-import { CongPrefs, Host, VFormRef } from '~~/types'
+import type { CongPrefs, Host, VFormRef } from '~~/types'
 
 const emit = defineEmits<{
   valid: [val: boolean]

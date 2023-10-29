@@ -1,4 +1,4 @@
-import { Notification } from '~~/types'
+import type { Notification } from '~~/types'
 
 const defaultNotification: Notification = {
   action: undefined, // A button to click

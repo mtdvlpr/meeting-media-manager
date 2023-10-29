@@ -45,7 +45,7 @@ import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import * as fileWatcher from 'chokidar'
 import type { LocaleObject } from '#i18n'
-import { CongPrefs, ObsPrefs, Theme, ZoomPrefs } from '~~/types'
+import type { CongPrefs, ObsPrefs, Theme, ZoomPrefs } from '~~/types'
 
 interface Cong {
   id: string

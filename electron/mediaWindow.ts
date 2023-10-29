@@ -2,9 +2,9 @@ import { platform } from 'os'
 import { join } from 'path'
 import {
   BrowserWindow,
-  BrowserWindowConstructorOptions,
+  type BrowserWindowConstructorOptions,
   ipcMain,
-  Point,
+  type Point,
 } from 'electron'
 import { AR_HEIGHT, AR_WIDTH } from './main'
 import BrowserWinHandler from './BrowserWinHandler'

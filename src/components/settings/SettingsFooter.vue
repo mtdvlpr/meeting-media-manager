@@ -61,7 +61,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { remove } from 'fs-extra'
 import { join } from 'upath'
 import getFolderSize from 'get-folder-size'
-import { PrefStore } from '~~/types'
+import type { PrefStore } from '~~/types'
 
 const props = defineProps<{
   cache: number

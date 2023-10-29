@@ -1,5 +1,5 @@
 import type { WebDAVClient } from 'webdav/web/types'
-import { CongFile, PrefStore } from '~~/types'
+import type { CongFile, PrefStore } from '~~/types'
 
 interface CongStore {
   client: WebDAVClient | null

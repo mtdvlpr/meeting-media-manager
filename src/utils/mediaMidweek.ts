@@ -1,7 +1,7 @@
 import type { Database } from '@stephen/sql.js'
 import { writeJson } from 'fs-extra'
 import { join } from 'upath'
-import { MultiMediaExtractRef, DateFormat } from '~~/types'
+import type { MultiMediaExtractRef, DateFormat } from '~~/types'
 
 export async function getMwMedia(date: string) {
   const { $dayjs } = useNuxtApp()

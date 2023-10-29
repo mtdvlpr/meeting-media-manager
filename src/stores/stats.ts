@@ -1,4 +1,4 @@
-import { MeetingFile } from '~~/types'
+import type { MeetingFile } from '~~/types'
 
 interface Perf {
   start: number

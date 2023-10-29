@@ -49,7 +49,7 @@
 </template>
 <script setup lang="ts">
 import { extname, join, trimExt } from 'upath'
-import { LocalFile, MeetingFile, VideoFile } from '~~/types'
+import type { LocalFile, MeetingFile, VideoFile } from '~~/types'
 
 const props = defineProps<{
   media: (LocalFile | MeetingFile)[]

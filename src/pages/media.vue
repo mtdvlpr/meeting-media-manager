@@ -20,7 +20,7 @@ import { useIpcRendererOn } from '@vueuse/electron'
 import { ipcRenderer } from 'electron'
 import { basename, changeExt, join } from 'upath'
 import { existsSync, readFileSync } from 'fs-extra'
-import { PrefStore } from '~~/types'
+import type { PrefStore } from '~~/types'
 
 definePageMeta({ layout: 'media' })
 

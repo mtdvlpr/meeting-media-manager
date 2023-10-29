@@ -1,5 +1,5 @@
 import type { LocaleObject } from '#i18n'
-import { ShortJWLang } from '~~/types'
+import type { ShortJWLang } from '~~/types'
 
 export const DAYJS_LOCALES = [
   'af',

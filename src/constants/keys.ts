@@ -1,4 +1,4 @@
-import { PrefStore } from '~~/types'
+import type { PrefStore } from '~~/types'
 
 // Provided by default layout
 export const windowSizeKey = Symbol('windowSize') as InjectionKey<{

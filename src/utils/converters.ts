@@ -15,7 +15,7 @@ import {
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'
-import { Release, DateFormat } from '~~/types'
+import type { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
   baseDate: Dayjs,

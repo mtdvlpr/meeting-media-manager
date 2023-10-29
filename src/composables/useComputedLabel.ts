@@ -1,5 +1,5 @@
 import type { MaybeRef } from '@vueuse/core'
-import {
+import type {
   AppPrefs,
   CongPrefs,
   MediaPrefs,

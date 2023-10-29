@@ -2,7 +2,7 @@ import { platform } from 'os'
 import { ipcRenderer } from 'electron'
 import { ensureDirSync, readJsonSync } from 'fs-extra'
 import { basename, dirname, join, joinSafe } from 'upath'
-import { MeetingFile, ShortJWLang } from '~~/types'
+import type { MeetingFile, ShortJWLang } from '~~/types'
 
 export function appPath() {
   const store = storePath()

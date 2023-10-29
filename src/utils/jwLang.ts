@@ -1,6 +1,6 @@
 import { pathExists, readJson, readJsonSync, writeJson } from 'fs-extra'
 import { join } from 'upath'
-import { ShortJWLang, JWLang, Filter, Choice } from '~~/types'
+import type { ShortJWLang, JWLang, Filter, Choice } from '~~/types'
 
 export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const { $dayjs } = useNuxtApp()

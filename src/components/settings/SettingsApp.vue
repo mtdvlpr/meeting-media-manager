@@ -315,7 +315,7 @@ import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
 import type { LocaleObject } from '#i18n'
 import { existsSync } from 'fs-extra'
-import { AppPrefs, VFormRef, PrefStore } from '~~/types'
+import type { AppPrefs, VFormRef, PrefStore } from '~~/types'
 
 const props = defineProps<{
   prefs: PrefStore

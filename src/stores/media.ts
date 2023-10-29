@@ -1,5 +1,5 @@
 import type { Dayjs } from 'dayjs'
-import { MeetingFile, ShortJWLang } from '~~/types'
+import type { MeetingFile, ShortJWLang } from '~~/types'
 
 interface MediaStore {
   songPub: string

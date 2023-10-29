@@ -43,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import { extname } from 'upath'
-import { Images, MediaItem, VideoFile } from '~~/types'
+import type { Images, MediaItem, VideoFile } from '~~/types'
 
 defineProps<{
   active: boolean

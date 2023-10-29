@@ -1,5 +1,5 @@
 import type { ParticipantPropertiesPayload } from '@zoomus/websdk/embedded'
-import { ZoomPrefs } from '~~/types'
+import type { ZoomPrefs } from '~~/types'
 
 export const zoomSocket = () => {
   if (!window.sockets || window.sockets.length === 0) return null

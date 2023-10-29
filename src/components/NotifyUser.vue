@@ -55,7 +55,7 @@
 </template>
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'
-import { NotifyAction } from '~~/types'
+import type { NotifyAction } from '~~/types'
 
 const store = useNotifyStore()
 const { notifications } = storeToRefs(store)

@@ -155,7 +155,7 @@
 <script setup lang="ts">
 import { ensureDir, readdir } from 'fs-extra'
 import { extname, join } from 'upath'
-import { MeetingPrefs, PrefStore, VFormRef, VideoFile } from '~~/types'
+import type { MeetingPrefs, PrefStore, VFormRef, VideoFile } from '~~/types'
 
 const props = defineProps<{
   prefs: PrefStore

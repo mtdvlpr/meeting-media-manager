@@ -116,7 +116,7 @@ import { ipcRenderer } from 'electron'
 
 import { readFile, stat, writeJSON } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import {
+import type {
   LocalFile,
   MeetingFile,
   MeetingFileBase,

@@ -43,7 +43,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, dirname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import { pathExistsSync, readJsonSync, readdirSync } from 'fs-extra'
-import { LocalFile } from '~~/types'
+import type { LocalFile } from '~~/types'
 
 const loading = ref(false)
 

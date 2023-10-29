@@ -51,7 +51,7 @@
 import { ipcRenderer } from 'electron'
 import type { Database } from '@stephen/sql.js'
 import { extname, trimExt } from 'upath'
-import { LocalFile, VideoFile } from '~~/types'
+import type { LocalFile, VideoFile } from '~~/types'
 
 const props = defineProps<{
   file: LocalFile | VideoFile

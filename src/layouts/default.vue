@@ -18,7 +18,7 @@ import { fileURLToPath, pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { useIpcRendererOn } from '@vueuse/electron'
 import { join } from 'upath'
-import { Theme } from '~~/types'
+import type { Theme } from '~~/types'
 
 const statStore = useStatStore()
 const windowSize = useWindowSize()

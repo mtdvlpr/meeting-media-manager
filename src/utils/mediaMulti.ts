@@ -1,7 +1,12 @@
 import { pathExists, stat } from 'fs-extra'
 import { join } from 'upath'
 import type { Database } from '@stephen/sql.js'
-import { MeetingFile, VideoFile, ImageFile, MultiMediaItem } from '~~/types'
+import type {
+  MeetingFile,
+  VideoFile,
+  ImageFile,
+  MultiMediaItem,
+} from '~~/types'
 
 export async function getDocumentMultiMedia(
   db: Database,

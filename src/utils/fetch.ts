@@ -1,6 +1,6 @@
 import { createWriteStream, WriteStream, ensureFile } from 'fs-extra'
 import { author, name } from '~~/package.json'
-import {
+import type {
   Publication,
   Release,
   MediaItemResult,

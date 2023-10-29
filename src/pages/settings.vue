@@ -125,7 +125,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { PrefStore } from '~~/types'
+import type { PrefStore } from '~~/types'
 
 useHead({ title: 'Settings' })
 const { totalProgress, setProgress, relativeDownloadProgress } = useProgress()

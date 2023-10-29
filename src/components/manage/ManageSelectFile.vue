@@ -32,7 +32,7 @@
   </v-col>
 </template>
 <script setup lang="ts">
-import { LocalFile, VideoFile } from '~~/types'
+import type { LocalFile, VideoFile } from '~~/types'
 defineProps<{
   type: string
   files: (LocalFile | VideoFile)[]

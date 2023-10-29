@@ -106,7 +106,7 @@ import type { Duration } from 'dayjs/plugin/duration'
 import { pathExists } from 'fs-extra'
 import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { useRouteQuery } from '@vueuse/router'
-import { Time, Times, TimeString } from '~~/types'
+import type { Time, Times, TimeString } from '~~/types'
 
 const props = defineProps<{
   src: string

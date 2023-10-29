@@ -31,7 +31,7 @@
 </template>
 <script setup lang="ts">
 import type { Dayjs } from 'dayjs'
-import { DateFormat } from '~~/types'
+import type { DateFormat } from '~~/types'
 
 const props = defineProps<{
   baseDate: Dayjs

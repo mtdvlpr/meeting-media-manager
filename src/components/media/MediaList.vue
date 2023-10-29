@@ -118,7 +118,7 @@ import { useRouteQuery } from '@vueuse/router'
 
 import { readJsonSync, writeJson } from 'fs-extra'
 import { basename, dirname, join } from 'upath'
-import { DateFormat, VideoFile } from '~~/types'
+import type { DateFormat, VideoFile } from '~~/types'
 type MediaItem = {
   id: string
   path: string

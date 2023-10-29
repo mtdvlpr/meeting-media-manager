@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 import { basename, join } from 'upath'
-import { DateFormat } from '~~/types'
+import type { DateFormat } from '~~/types'
 
 const props = defineProps<{
   firstChoice?: boolean

@@ -17,7 +17,7 @@
   />
 </template>
 <script setup lang="ts">
-import { VideoFile } from '~~/types'
+import type { VideoFile } from '~~/types'
 const props = defineProps<{
   modelValue: any
 }>()

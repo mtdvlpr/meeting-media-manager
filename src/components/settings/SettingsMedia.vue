@@ -245,7 +245,7 @@
 import { readFile } from 'fs-extra'
 import { extname, join } from 'upath'
 import { ipcRenderer } from 'electron'
-import { MediaPrefs, PrefStore, ShortJWLang, VFormRef } from '~~/types'
+import type { MediaPrefs, PrefStore, ShortJWLang, VFormRef } from '~~/types'
 
 const props = defineProps<{
   prefs: PrefStore

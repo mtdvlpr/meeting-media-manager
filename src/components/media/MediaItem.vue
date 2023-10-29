@@ -153,8 +153,8 @@ import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
 
 import { pathExists, readJson } from 'fs-extra'
-import { Marker, Times, TimeString, VideoFile } from '~~/types'
-import { PanzoomChangeEvent } from '~~/types/global'
+import type { Marker, Times, TimeString, VideoFile } from '~~/types'
+import type { PanzoomChangeEvent } from '~~/types/global'
 
 const props = defineProps<{
   src: string

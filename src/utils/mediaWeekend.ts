@@ -1,7 +1,7 @@
 import { pathExists, stat } from 'fs-extra'
 import { join } from 'upath'
 import type { Database } from '@stephen/sql.js'
-import {
+import type {
   MultiMediaItem,
   MeetingFile,
   DateFormat,

@@ -1,4 +1,4 @@
-import { SmallMediaFile, MediaFile, Publication, Res } from '~~/types'
+import type { SmallMediaFile, MediaFile, Publication, Res } from '~~/types'
 
 export async function getMediaLinks(
   mediaItem: {

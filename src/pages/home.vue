@@ -67,7 +67,7 @@ import { fileURLToPath, pathToFileURL } from 'url'
 import { useIpcRenderer } from '@vueuse/electron'
 import { existsSync } from 'fs-extra'
 import { basename, join } from 'upath'
-import { AppPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
+import type { AppPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
 
 useHead({ title: 'Home' })
 const { $dayjs } = useNuxtApp()

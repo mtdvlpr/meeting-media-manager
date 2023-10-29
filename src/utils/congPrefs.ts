@@ -1,6 +1,6 @@
 import { pathExists, readFile } from 'fs-extra'
 import { join } from 'upath'
-import {
+import type {
   ObsPrefs,
   AppPrefs,
   CongPrefs,

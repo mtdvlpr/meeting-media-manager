@@ -1,4 +1,4 @@
-import { PrefStore } from '~~/types'
+import type { PrefStore } from '~~/types'
 export const PREFS = {
   app: {
     autoOpenFolderWhenDone: false,

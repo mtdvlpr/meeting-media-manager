@@ -1,6 +1,6 @@
 import type OBSSocket from 'obs-websocket-js-v5'
 import type OBSSocketV4 from 'obs-websocket-js'
-import { ObsPrefs } from '~~/types'
+import type { ObsPrefs } from '~~/types'
 
 let obs: OBSSocket | OBSSocketV4 | null = null
 
