@@ -38,7 +38,7 @@
     "linux",
     "win32"
   ],
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.0.1",
   "dependencies": {
     "@sentry/electron": "^4.14.0",
     "dotenv": "^16.3.1",
