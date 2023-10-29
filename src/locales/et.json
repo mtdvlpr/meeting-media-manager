@@ -72,7 +72,7 @@
   "errorWebdavRm": "Selle faili kustutamisel ilmnes viga. Võtke ühendust oma videokonverentsi korraldajaga.",
   "errorWebdavTooBig": "Fail mida proovite üles laadida, on liiga suur (max 512 Mb). Fail on lisatud kohapeal, kuid mitte koguduse serverisse.",
   "errorWebdavTooManyRequests": "Serverile on saadetud liiga palju päringuid. Palun proovi hiljem uuesti.",
-  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
+  "excludeFootnotes": "Ära impordi meediat Vahitorni märkustest",
   "excludeLffImages": "Ära kuva <em> Mõttekas Elu</em> pilte, kui ei ole koguduse piibliuurimise osa",
   "excludeTh": "Ära arvesta <em>th</em> brošüürist kogu meediat",
   "fetchMedia": "Värskenda meediakaustu",
