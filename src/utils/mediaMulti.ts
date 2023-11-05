@@ -174,15 +174,16 @@ async function processMultiMediaItem(
         mmItem.NextParagraphOrdinal = result[0].TargetParagraphOrdinal
     }
   }
+
+  const mediaLang = getPrefs<string>('media.lang')
   const fallbackLang = getPrefs<string>('media.langFallback')
+
   try {
     // Get Video file
     if (
       mmItem.MimeType.includes('audio') ||
       mmItem.MimeType.includes('video')
     ) {
-      const mediaLang = getPrefs<string>('media.lang')
-
       let json: VideoFile = (
         await getMediaLinks(
           {
@@ -230,6 +231,25 @@ async function processMultiMediaItem(
             } as ImageFile)!,
             mmItem.FilePath,
           )
+
+          // mmItem.Link is not always correct (e.x. treasure imgs for TPO)
+          // See https://github.com/sircharlo/meeting-media-manager/issues/2259
+          if (
+            lang &&
+            mmItem.Link &&
+            lang !== mediaLang &&
+            !(await pathExists(mmItem.LocalPath))
+          ) {
+            mmItem.LocalPath = join(
+              pubPath({
+                BeginParagraphOrdinal: 0,
+                title: '',
+                url: `url_${mediaLang}.jpg`,
+                queryInfo: mmItem,
+              } as MeetingFile),
+              mmItem.FilePath,
+            )
+          }
 
           if (lang && !mmItem.Link && !(await pathExists(mmItem.LocalPath))) {
             mmItem.LocalPath = join(
