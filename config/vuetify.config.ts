@@ -4,7 +4,6 @@ export default defineVuetifyConfiguration({
   date: { adapter: 'dayjs' },
   directives: ['ClickOutside'],
   icons: { defaultSet: 'unocss-mdi' },
-  labComponents: ['VDatePicker', 'VOtpInput', 'VSkeletonLoader'],
   defaults: {
     VBtnToggle: { color: 'primary' },
     VField: { color: 'primary' },
