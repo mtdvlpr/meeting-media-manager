@@ -38,16 +38,18 @@ export async function getMwMedia(date: string) {
     db,
     'SELECT FeatureTitle FROM Document WHERE Class = 10 ORDER BY FeatureTitle',
   )
-  let livingTitle = living[0].FeatureTitle
+  let livingTitle = living[0]?.FeatureTitle
   if (living.length > 1) {
-    livingTitle = living[Math.floor(living.length / 2)].FeatureTitle
+    livingTitle = living[Math.floor(living.length / 2)]?.FeatureTitle
   }
 
-  writeJson(join(pubPath()!, 'mwb', 'headings.json'), {
-    treasures: treasures.FeatureTitle,
-    apply: apply.FeatureTitle,
-    living: livingTitle,
-  })
+  if (treasures.FeatureTitle && apply.FeatureTitle && livingTitle) {
+    writeJson(join(pubPath()!, 'mwb', 'headings.json'), {
+      treasures: treasures.FeatureTitle,
+      apply: apply.FeatureTitle,
+      living: livingTitle,
+    })
+  }
 
   // Get document multimedia and add them to the media list
   const mms = await getDocumentMultiMedia(db, docId)

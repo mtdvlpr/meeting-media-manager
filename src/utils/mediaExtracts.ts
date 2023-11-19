@@ -39,20 +39,14 @@ export async function getDocumentExtract({
   extracts.forEach((extract) => {
     let imagesOnly = false
     const excludeLffImages = getPrefs<boolean>('media.excludeLffImages')
-    if (extract.UniqueEnglishSymbol === 'lffi') {
+    if (
+      extract.UniqueEnglishSymbol === 'lffi' ||
+      extract.UniqueEnglishSymbol === 'lff'
+    ) {
       imagesOnly = true
-    } else if (extract.UniqueEnglishSymbol === 'lff') {
-      const match = extracts.find(
-        (e) =>
-          e.UniqueEnglishSymbol === 'lff' &&
-          e.BeginParagraphOrdinal !== extract.BeginParagraphOrdinal,
-      )
-      imagesOnly =
-        !!match && extract.BeginParagraphOrdinal < match.BeginParagraphOrdinal
     }
 
-    const skipCBS =
-      isCoWeek(baseDate) && extract.UniqueEnglishSymbol === 'lff' && !imagesOnly
+    const skipCBS = isCoWeek(baseDate) && extract.UniqueEnglishSymbol === 'bt'
 
     if (!skipCBS && (!imagesOnly || !excludeLffImages)) {
       promises.push(extractMediaItems({ extract, imagesOnly, date }))
@@ -152,9 +146,9 @@ async function extractMediaItems({
       ) {
         return true
       }
-      // Always include header image of Live Forever lesson
+      // Always include header image of Love People lesson
       else if (
-        extract.UniqueEnglishSymbol === 'lff' &&
+        extract.UniqueEnglishSymbol === 'lmd' &&
         mmItem.BeginParagraphOrdinal === 1
       ) {
         return true
