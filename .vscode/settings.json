@@ -2,11 +2,12 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.fixAll.markdownlint": true
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.markdownlint": "explicit"
   },
   "yaml.schemas": {
-    "https://json.schemastore.org/github-issue-config.json": "./../.github/ISSUE_TEMPLATE/config.yml"
+    "https://json.schemastore.org/github-issue-config.json": "/../.github/ISSUE_TEMPLATE/config.yml",
+    "https://json.schemastore.org/electron-builder.json": "/electron-builder*.yml"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "markdownlint.ignore": ["LICENSE.md"],

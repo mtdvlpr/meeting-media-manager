@@ -11,5 +11,6 @@
     "visualstudioexptteam.vscodeintellicode",
     "vue.volar",
     "yzhang.markdown-all-in-one"
-  ]
+  ],
+  "unwantedRecommendations": ["octref.vetur"]
 }

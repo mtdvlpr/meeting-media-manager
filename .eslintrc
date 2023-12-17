@@ -1,8 +1,6 @@
 {
   "root": true,
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
+  "parserOptions": { "project": "./tsconfig.json" },
   "extends": [
     "@nuxt/eslint-config",
     "plugin:vuetify/recommended",
