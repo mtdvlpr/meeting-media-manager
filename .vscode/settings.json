@@ -9,6 +9,7 @@
     "https://json.schemastore.org/github-issue-config.json": "/../.github/ISSUE_TEMPLATE/config.yml",
     "https://json.schemastore.org/electron-builder.json": "/electron-builder*.yml"
   },
+  "eslint.validate": ["glimmer-ts", "glimmer-js"],
   "typescript.tsdk": "node_modules/typescript/lib",
   "markdownlint.ignore": ["LICENSE.md"],
   "cSpell.ignoreWords": ["PDF", "transform", "KI", "SHU", "shorthand"],
