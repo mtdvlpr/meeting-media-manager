@@ -225,7 +225,12 @@ const processPlaylist = async (filePath: string) => {
   // Get correct extension
   media
     .map((m) => {
-      if (!extname(m.Label || '')) {
+      if (
+        !extname(m.Label || '') ||
+        (!isImage(m.Label || '') &&
+          !isVideo(m.Label || '') &&
+          !isAudio(m.Label || ''))
+      ) {
         if (extname(m.FilePath ?? '')) {
           m.Label += extname(m.FilePath!)
         } else if (m.MimeType) {
