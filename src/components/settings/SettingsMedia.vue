@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
   <v-form ref="mediaForm" v-model="valid" class="media-settings">
-    <form-input
+    <input-field
       id="media.lang"
       v-model="media.lang"
       field="autocomplete"
@@ -10,92 +10,83 @@
       item-title="name"
       item-value="langcode"
       :loading="loading"
-      :locked="isLocked('media.lang')"
       auto-select-first
       required
     />
-    <form-input
+    <input-field
       id="media.langFallback"
       v-model="media.langFallback"
       field="autocomplete"
-      :label="$t('langFallback')"
+      :label="$t('mediaLangFallback')"
       :items="fallbackLangs"
       item-title="name"
       item-value="langcode"
       :loading="loading"
-      :locked="isLocked('media.langFallback')"
       auto-select-first
       clearable
     />
-    <form-input
+    <input-field
       id="media.maxRes"
       v-model="media.maxRes"
       field="btn-group"
       group-label="maxRes"
-      :locked="isLocked('media.maxRes')"
       :group-items="resolutions"
       mandatory
       required
     />
     <v-divider class="mb-6" />
-    <form-input
+    <input-field
       id="media.enableSubtitles"
       v-model="media.enableSubtitles"
       field="switch"
-      :locked="isLocked('media.enableSubtitles')"
       :label="$t('enableSubtitles')"
     />
-    <form-input
+    <input-field
       v-if="media.enableSubtitles"
       id="media.langSubs"
       v-model="media.langSubs"
       field="autocomplete"
-      :label="$t('langSubs')"
+      :label="$t('subsLang')"
       :items="subLangs"
       item-title="name"
       item-value="langcode"
       :loading="loading"
-      :locked="isLocked('media.langSubs')"
       auto-select-first
       required
     />
     <v-divider class="mb-6" />
-    <form-input
+    <input-field
       id="media.enableMp4Conversion"
       v-model="media.enableMp4Conversion"
       field="switch"
-      explanation="enableMp4ConversionExplain"
-      :locked="isLocked('media.enableMp4Conversion')"
-      :label="$t('enableMp4Conversion')"
+      :explanation="$t('convertDownloadedExplain')"
+      :label="$t('convertDownloaded')"
     />
-    <form-input
+    <input-field
       v-if="media.enableMp4Conversion"
       id="media.keepOriginalsAfterConversion"
       v-model="media.keepOriginalsAfterConversion"
       field="switch"
-      :locked="isLocked('media.keepOriginalsAfterConversion')"
       :label="$t('keepOriginalsAfterConversion')"
     />
     <v-divider class="mb-6" />
-    <form-input
+    <input-field
       id="media.enableMediaDisplayButton"
       v-model="media.enableMediaDisplayButton"
       field="switch"
-      :locked="isLocked('media.enableMediaDisplayButton')"
       :label="$t('enableMediaDisplayButton')"
     />
     <template v-if="media.enableMediaDisplayButton">
-      <form-input
+      <input-field
         v-if="screens.length > 0"
         id="media.preferredOutput"
         v-model="media.preferredOutput"
         field="select"
         item-value="id"
         :items="[{ id: 'window', title: $t('window') }, ...screens]"
-        :locked="isLocked('media.preferredOutput')"
         :label="$t('preferredOutput')"
       />
-      <v-row v-if="bg" class="mb-4">
+      <v-row v-if="bg" class="mt-2 mb-4">
         <v-col align-self="center" class="text-left">
           {{ $t('mediaWindowBackground') }}
         </v-col>
@@ -112,7 +103,7 @@
             style="max-width: 300px; max-height: 100px"
           />
           <div v-else>
-            <div id="yeartextLogoContainer">
+            <div v-if="!media.hideMediaLogo" id="yeartextLogoContainer">
               <div id="yeartextLogo"></div>
             </div>
             <div id="yeartextContainer" v-html="background" />
@@ -122,28 +113,35 @@
           <v-btn
             v-if="bg === 'yeartext'"
             color="primary"
-            class="mb-2"
             icon="i-mdi:image-edit-outline"
+            :loading="uploading"
+            class="mb-2"
             @click="uploadBg()"
           />
-          <v-btn v-else color="error" class="mb-2" @click="removeBg()">
-            {{ $t('delete') }}
-          </v-btn>
+          <v-btn
+            v-else
+            color="error"
+            icon="i-mdi:delete"
+            :loading="removing"
+            class="mb-2"
+            @click="removeBg()"
+          />
           <v-btn
             color="warning"
-            class="mb-2"
-            min-width="32px"
             icon="i-mdi:web-refresh"
+            :loading="refreshingBg"
+            :disabled="removing || uploading"
+            min-width="32px"
+            class="mb-2"
             @click="refreshBg()"
           />
         </v-col>
       </v-row>
       <v-row>
         <v-col>
-          <form-input
+          <input-field
             id="media.mediaWinShortcut"
             v-model="media.mediaWinShortcut"
-            :locked="isLocked('media.mediaWinShortcut')"
             placeholder="e.g. Alt+Z"
             :label="$t('mediaWinShortcut')"
             required
@@ -151,10 +149,9 @@
           />
         </v-col>
         <v-col>
-          <form-input
+          <input-field
             id="media.presentShortcut"
             v-model="media.presentShortcut"
-            :locked="isLocked('media.presentShortcut')"
             placeholder="e.g. Alt+D"
             :label="$t('presentShortcut')"
             required
@@ -162,29 +159,26 @@
           />
         </v-col>
       </v-row>
-      <form-input
+      <input-field
         id="media.hideMediaLogo"
         v-model="media.hideMediaLogo"
         field="switch"
-        :locked="isLocked('media.hideMediaLogo')"
         :label="$t('hideMediaLogo')"
       />
-      <form-input
+      <input-field
         id="media.hideWinAfterMedia"
         v-model="media.hideWinAfterMedia"
         field="switch"
-        explanation="hideWinAfterMediaExplain"
-        :locked="isLocked('media.hideWinAfterMedia')"
+        :explanation="$t('hideWinAfterMediaExplain')"
         :label="$t('hideWinAfterMedia')"
       />
-      <form-input
+      <input-field
         id="media.autoPlayFirst"
         v-model="media.autoPlayFirst"
         field="switch"
         :label="$t('autoPlayFirst')"
-        :locked="isLocked('media.autoPlayFirst')"
       />
-      <form-input
+      <input-field
         v-if="media.autoPlayFirst"
         id="media.autoPlayFirstTime"
         v-model="media.autoPlayFirstTime"
@@ -193,31 +187,26 @@
         :max="15"
         custom-input
         :group-label="playMinutesBeforeMeeting"
-        :locked="isLocked('media.autoPlayFirstTime')"
-        hide-details="auto"
       />
-      <form-input
+      <input-field
         id="media.enablePp"
         v-model="media.enablePp"
         field="switch"
-        :locked="isLocked('media.enablePp')"
         :label="$t('enablePp')"
       />
       <template v-if="media.enablePp">
-        <form-input
+        <input-field
           id="media.ppForward"
           v-model="media.ppForward"
-          :locked="isLocked('media.ppForward')"
           placeholder="e.g. PageDown / Alt+F / Alt+N"
           :label="$t('ppForward')"
           required
           :rules="getShortcutRules('nextMediaItem')"
         />
-        <form-input
+        <input-field
           id="media.ppBackward"
           v-model="media.ppBackward"
           placeholder="e.g. PageUp / Alt+B / Alt+P"
-          :locked="isLocked('media.ppBackward')"
           :label="$t('ppBackward')"
           required
           :rules="getShortcutRules('previousMediaItem')"
@@ -226,18 +215,17 @@
     </template>
     <template v-for="(option, i) in includeOptions">
       <v-divider v-if="option === 'div'" :key="'div-' + i" class="mb-6" />
-      <form-input
+      <input-field
         v-else
         :id="`media.${option}`"
         :key="option"
         v-model="media[option]"
         field="switch"
-        :locked="isLocked(`media.${option}`)"
       >
         <template #label>
           <span v-html="$t(option)" />
         </template>
-      </form-input>
+      </input-field>
     </template>
   </v-form>
 </template>
@@ -325,7 +313,7 @@ watch(
       loadBg()
     }
     mediaForm.value?.validate()
-    useStatStore().setShowMediaPlayback(val)
+    useStatStore().showMediaPlayback = val
   },
 )
 watch(
@@ -360,7 +348,7 @@ const playMinutesBeforeMeeting = useComputedLabel<MediaPrefs>(
   'minutesBeforeMeeting',
   media,
   'autoPlayFirstTime',
-  PREFS.media.autoPlayFirstTime!,
+  DEFAULT_PREFS.media.autoPlayFirstTime!,
 )
 
 // Languages
@@ -433,8 +421,8 @@ watch(
   (val) => {
     changeShortcut(val, 'openPresentMode')
     const store = useStatStore()
-    store.setShowMediaPlayback(false)
-    store.setShowMediaPlayback(true)
+    store.showMediaPlayback = false
+    store.showMediaPlayback = true
   },
 )
 
@@ -448,11 +436,16 @@ const loadBg = async () => {
   bg.value = await refreshBackgroundImgPreview()
 }
 
-const refreshBg = () => {
+const refreshingBg = ref(false)
+const refreshBg = async () => {
+  refreshingBg.value = true
   refreshBackgroundImgPreview()
+  refreshingBg.value = false
 }
 
+const uploading = ref(false)
 const uploadBg = async () => {
+  uploading.value = true
   const result = await ipcRenderer.invoke('openDialog', {
     properties: ['openFile'],
     filters: [
@@ -482,9 +475,12 @@ const uploadBg = async () => {
   } else {
     warn('notAnImage')
   }
+  uploading.value = false
 }
 
+const removing = ref(false)
 const removeBg = async () => {
+  removing.value = true
   const filename = bgFilename()
   const background = findAll(join(appPath(), filename + '*'))
   rm(background)
@@ -510,6 +506,7 @@ const removeBg = async () => {
   // Refresh the media screen background
   loadBg()
   loadFont('yeartext')
+  removing.value = false
 }
 </script>
 <style lang="scss" scoped>
@@ -535,7 +532,7 @@ const removeBg = async () => {
     height: 1.2cqw;
 
     #yeartextLogo {
-      margin: -0.6cqw -0.45cqw;
+      margin: -0.55cqw -0.25cqw;
     }
   }
 

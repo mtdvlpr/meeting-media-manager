@@ -1,5 +1,10 @@
 import { platform } from 'os'
-import { expect, test, ElectronApplication, Page } from '@playwright/test'
+import {
+  expect,
+  test,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import { version } from '../../package.json'
 import { MS_IN_SEC } from './../../src/constants/general'
 import { startApp, openHomePage } from './../helpers/electronHelpers'
@@ -56,6 +61,7 @@ test('shuffle button works correctly', async () => {
   await shuffleBtn.click()
 
   // Wait for stop icon to appear
+  // eslint-disable-next-line playwright/no-wait-for-selector
   await page.waitForSelector('.fa-stop')
   await delay(4 * MS_IN_SEC)
 

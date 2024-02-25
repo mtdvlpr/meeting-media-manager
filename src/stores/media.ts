@@ -15,37 +15,20 @@ interface MediaStore {
   >
 }
 
-const defaultState: MediaStore = {
-  songPub: 'sjjm', // The song publication (sjj for sign language)
-  ffMpeg: false, // Whether FFmpeg has been initialized
-  musicFadeOut: '', // The fade out time for shuffle music
-  mediaLang: null, // The media language object
-  fallbackLang: null, // The fallback language object
-  meetings: new Map(), // A map of meetings and their media
-  progress: new Map(), // A map with downloadIfRequired() calls. If a file is already downloading, it will be returned from the map
-  downloadProgress: new Map(),
-}
-
 export const useMediaStore = defineStore('media', {
-  state: (): MediaStore => cloneDeep(defaultState),
+  state: (): MediaStore => ({
+    songPub: 'sjjm', // The song publication (sjj for sign language)
+    ffMpeg: false, // Whether FFmpeg has been initialized
+    musicFadeOut: '', // The fade out time for shuffle music
+    mediaLang: null, // The media language object
+    fallbackLang: null, // The fallback language object
+    meetings: new Map(), // A map of meetings and their media
+    progress: new Map(), // A map with downloadIfRequired() calls. If a file is already downloading, it will be returned from the map
+    downloadProgress: new Map(),
+  }),
   actions: {
-    setSongPub(songPub: string) {
-      this.songPub = songPub
-    },
-    setMediaLang(mediaLang: ShortJWLang | null) {
-      this.mediaLang = mediaLang
-    },
-    setFallbackLang(fallbackLang: ShortJWLang | null) {
-      this.fallbackLang = fallbackLang
-    },
-    setFFmpeg(ffmpeg: boolean) {
-      this.ffMpeg = ffmpeg
-    },
-    setMusicFadeOut(fadeOut: Dayjs | string) {
-      this.musicFadeOut = fadeOut
-    },
     setProgress({ key, promise }: { key: string; promise: Promise<string> }) {
-      this.progress.set(key, promise)
+      this.progress = this.progress.set(key, promise)
     },
     setDownloadProgress({
       key,
@@ -54,10 +37,10 @@ export const useMediaStore = defineStore('media', {
       key: string
       downloadProgress: { current: number; total: number; date?: string }
     }) {
-      this.downloadProgress.set(key, downloadProgress)
+      this.downloadProgress = this.downloadProgress.set(key, downloadProgress)
     },
     addDate({ date, map }: { date: string; map: Map<number, MeetingFile[]> }) {
-      this.meetings.set(date, map)
+      this.meetings = this.meetings.set(date, map)
     },
     deleteDate(date: string) {
       this.meetings.delete(date)
@@ -85,9 +68,9 @@ export const useMediaStore = defineStore('media', {
       newFormat: string
     }) {
       const dates = this.meetings.keys()
+      const dayjs = useDayjs()
       for (const date of dates) {
-        const { $dayjs } = useNuxtApp()
-        const day = $dayjs(date, oldFormat, locale)
+        const day = dayjs(date, oldFormat, locale)
         if (day.isValid()) {
           const newDate = day.locale(locale).format(newFormat)
           if (newDate !== date) {

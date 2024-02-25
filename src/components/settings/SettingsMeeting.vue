@@ -1,54 +1,47 @@
 <template>
   <v-form ref="meetingForm" v-model="valid">
-    <form-input
+    <input-field
       id="meeting.specialCong"
       v-model="meeting.specialCong"
       field="switch"
-      :locked="isLocked('meeting.specialCong')"
       :label="$t('specialCong')"
     />
     <template v-if="!meeting.specialCong">
-      <form-input
+      <input-field
         v-for="m in meetingKeys"
         :id="`meeting.${m.day}`"
         :key="m.day"
         v-model="meeting[m.day]"
         field="btn-group"
-        :group-label="`${m.day.slice(0, 2)}Day`"
+        :group-label="`${m.day.slice(0, 2)}MeetingDay`"
         :group-items="localeDays"
-        :locked="isLocked(`meeting.${m.day}`)"
         height="56px"
         :mandatory="meeting[m.day] !== null"
         required
       >
-        <form-time-picker
+        <input-time
           :id="`meeting.${m.time}`"
           v-model="meeting[m.time]"
-          label=""
           required
-          :locked="isLocked(`meeting.${m.time}`)"
         />
-      </form-input>
-      <form-date-picker
+      </input-field>
+      <input-date
         id="meeting.coWeek"
         v-model="meeting.coWeek"
         :label="$t('coWeek')"
         :min="$dayjs().startOf('week').format('YYYY-MM-DD')"
-        :locked="isLocked('meeting.coWeek')"
         :allowed-dates="isTuesday"
-        explanation="coWeekExplain"
+        :explanation="$t('coWeekExplain')"
         :format="prefs.app.outputFolderDateFormat"
       />
     </template>
     <v-divider :class="{ 'mb-6': true, 'mt-6': !meeting.specialCong }" />
     <v-col class="d-flex pa-0 pb-2 align-center justify-space-between">
-      <form-input
+      <input-field
         id="meeting.enableMusicButton"
         v-model="meeting.enableMusicButton"
         field="switch"
-        :locked="isLocked('meeting.enableMusicButton')"
         :label="$t('enableMusicButton')"
-        hide-details="auto"
         class="mr-4 mb-2"
       />
       <v-tooltip
@@ -77,38 +70,34 @@
       </v-tooltip>
     </v-col>
     <template v-if="meeting.enableMusicButton">
-      <form-input
+      <input-field
         id="meeting.shuffleShortcut"
         v-model="meeting.shuffleShortcut"
-        :locked="isLocked('meeting.shuffleShortcut')"
         placeholder="e.g. Alt+K"
         :label="$t('shuffleShortcut')"
         required
         :rules="getShortcutRules('toggleMusicShuffle')"
       />
-      <form-input
+      <input-field
         id="meeting.musicVolume"
         v-model="meeting.musicVolume"
         field="slider"
-        :locked="isLocked('meeting.musicVolume')"
         :group-label="$t('musicVolume')"
         label-suffix="%"
         :min="1"
         :max="100"
       />
-      <form-input
+      <input-field
         id="meeting.autoStartMusic"
         v-model="meeting.autoStartMusic"
         field="switch"
-        :locked="isLocked('meeting.autoStartMusic')"
         :label="$t('autoStartMusic')"
       />
-      <form-input
+      <input-field
         id="meeting.enableMusicFadeOut"
         v-model="meeting.enableMusicFadeOut"
         field="switch"
-        :locked="isLocked('meeting.enableMusicFadeOut')"
-        :label="$t('enableMusicFadeOut')"
+        :label="$t('musicFadeOutType')"
       />
       <v-row
         v-if="meeting.enableMusicFadeOut"
@@ -119,11 +108,10 @@
           <v-slider
             id="meeting.musicFadeOutTime"
             v-model="meeting.musicFadeOutTime"
+            :disabled="isLocked('meeting.musicFadeOutTime')"
             :min="5"
             :max="60"
             :step="5"
-            :locked="isLocked('meeting.musicFadeOutTime')"
-            hide-details="auto"
           />
         </v-col>
         <v-col cols="auto" align-self="center" class="text-right">
@@ -132,7 +120,6 @@
             v-model="meeting.musicFadeOutType"
             variant="outlined"
             mandatory
-            :locked="isLocked('meeting.musicFadeOutType')"
           >
             <v-btn
               value="smart"
@@ -210,9 +197,11 @@ const meetingDaysValid = computed(() => {
       !!meeting.value.weStartTime)
   )
 })
+
 watch(valid, (val) => {
   emit('valid', val && meetingDaysValid.value)
 })
+
 watch(meetingDaysValid, (val) => {
   emit('valid', valid.value && val)
 })
@@ -256,7 +245,7 @@ watch(
   () => meeting.value.enableMusicButton,
   (val) => {
     meetingForm.value?.validate()
-    useStatStore().setShowMusicButton(val)
+    useStatStore().showMusicButton = val
   },
 )
 const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
@@ -264,14 +253,14 @@ const musicFadeOutSmart = useComputedLabel<MeetingPrefs>(
   'musicFadeOutSmart',
   meeting,
   'musicFadeOutTime',
-  PREFS.meeting.musicFadeOutTime!,
+  DEFAULT_PREFS.meeting.musicFadeOutTime,
 )
 
 const musicFadeOutTimer = useComputedLabel<MeetingPrefs>(
   'musicFadeOutTimer',
   meeting,
   'musicFadeOutTime',
-  PREFS.meeting.musicFadeOutTime!,
+  DEFAULT_PREFS.meeting.musicFadeOutTime,
 )
 
 const processed = ref(0)

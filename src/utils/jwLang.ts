@@ -3,11 +3,11 @@ import { join } from 'upath'
 import type { ShortJWLang, JWLang, Filter, Choice } from '~~/types'
 
 export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   const langPath = join(appPath(), 'langs.json')
   const lastUpdate = getPrefs<string>('media.langUpdatedLast')
   const recentlyUpdated =
-    lastUpdate && $dayjs(lastUpdate).isAfter($dayjs().subtract(3, 'months'))
+    lastUpdate && dayjs(lastUpdate).isAfter(dayjs().subtract(3, 'months'))
   let langs: ShortJWLang[] = []
 
   if (forceReload || !(await pathExists(langPath)) || !recentlyUpdated) {
@@ -38,7 +38,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     try {
       await writeJson(langPath, langs, { spaces: 2 })
       log.debug('Wrote langs to file')
-      setPrefs('media.langUpdatedLast', $dayjs().toISOString())
+      setPrefs('media.langUpdatedLast', dayjs().toISOString())
     } catch (error: any) {
       log.error(error)
     }
@@ -88,15 +88,15 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   }
 
   const store = useMediaStore()
-  store.setMediaLang(langPrefInLangs ?? null)
-  store.setFallbackLang(fallbackLangObj ?? null)
-  store.setSongPub(langPrefInLangs?.isSignLanguage ? 'sjj' : 'sjjm')
+  store.mediaLang = langPrefInLangs ?? null
+  store.fallbackLang = fallbackLangObj ?? null
+  store.songPub = langPrefInLangs?.isSignLanguage ? 'sjj' : 'sjjm'
 
   if (availabilityUpdated) {
     try {
       await writeJson(langPath, langs, { spaces: 2 })
       log.debug('Wrote langs to file')
-      setPrefs('media.langUpdatedLast', $dayjs().toISOString())
+      setPrefs('media.langUpdatedLast', dayjs().toISOString())
     } catch (error: any) {
       log.error(error)
     }

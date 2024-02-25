@@ -34,7 +34,7 @@ export async function fetchFile({
         for (const downloadWriteStream of downloadWriteStreams) {
           downloadWriteStream.write(chunk)
         }
-        current = current + chunk.byteLength
+        current += chunk.byteLength
         store.setDownloadProgress({
           key: url,
           downloadProgress: {

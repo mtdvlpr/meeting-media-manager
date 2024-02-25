@@ -39,7 +39,7 @@ async function connectOBS<
                 getPrefs<string>('app.obs.zoomScene') &&
               newScene['scene-name'] !== getPrefs<string>('app.obs.imageScene')
             ) {
-              store.setCurrentScene(newScene['scene-name'])
+              store.currentScene = newScene['scene-name']
             }
           } catch (e) {
             log.error(e)
@@ -107,7 +107,7 @@ async function connectOBS<
               newScene.sceneName !== getPrefs<string>('app.obs.zoomScene') &&
               newScene.sceneName !== getPrefs<string>('app.obs.imageScene')
             ) {
-              store.setCurrentScene(newScene.sceneName)
+              store.currentScene = newScene.sceneName
             }
           } catch (e) {
             log.error(e)
@@ -160,7 +160,7 @@ async function connectOBS<
           await resetOBS()
         }
       }
-      store.setConnected(!!obs)
+      store.connected = !!obs
     } catch (e: any) {
       log.debug('Unknown OBS error')
       error('errorObs', e)
@@ -179,11 +179,11 @@ export async function resetOBS() {
       await obs.disconnect()
     }
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
 
   obs = null
-  useObsStore().clear()
+  useObsStore().$reset()
   unsetShortcuts('obs')
 }
 
@@ -241,8 +241,8 @@ export async function getScenes(current = false): Promise<string | string[]> {
       warn('errorObsZoomScene')
     }
 
-    store.setScenes(scenes)
-    store.setCurrentScene(currentScene)
+    store.scenes = scenes
+    store.currentScene = currentScene
 
     // Set shortcuts for scenes
     for (const [i] of scenes

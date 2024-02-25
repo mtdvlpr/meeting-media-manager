@@ -2,7 +2,12 @@ import { platform } from 'os'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
-import { expect, test, ElectronApplication, Page } from '@playwright/test'
+import {
+  expect,
+  test,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import { join } from 'upath'
 import { startApp, openHomePage } from './../helpers/electronHelpers'
 import { getDate } from './../helpers/generalHelpers'
@@ -40,6 +45,7 @@ test('fetch is successful', async () => {
   await page.locator('button', { hasText: locale.fetchMedia }).click()
 
   // Wait for jw sync to complete successfully
+  // eslint-disable-next-line playwright/no-wait-for-selector
   await page.waitForSelector('div.bg-success:has-text("JW.org (English)")', {
     timeout: 0,
   })

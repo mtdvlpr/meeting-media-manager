@@ -111,7 +111,7 @@ export function unsetShortcut(fn: ShortcutAction) {
     log.error(e)
   }
 
-  store.setShortcuts(shortcuts.filter(({ key }) => key !== match.key))
+  store.shortcuts = shortcuts.filter(({ key }) => key !== match.key)
 }
 
 export function unsetShortcuts(filter: ShortcutScope | 'all' = 'all') {
@@ -131,7 +131,7 @@ export function unsetShortcuts(filter: ShortcutScope | 'all' = 'all') {
       keepers.push({ ...shortcuts[i] })
     }
   }
-  store.setShortcuts(keepers)
+  store.shortcuts = keepers
 }
 
 export async function showMediaWindow() {
@@ -149,7 +149,7 @@ export async function showMediaWindow() {
 export function closeMediaWindow() {
   unsetShortcuts('mediaWin')
   ipcRenderer.send('closeMediaWindow')
-  usePresentStore().setMediaScreenInit(false)
+  usePresentStore().mediaScreenInit = false
 }
 
 export async function toggleMediaWindow(action?: string) {
@@ -189,7 +189,7 @@ export async function refreshBackgroundImgPreview(force = false) {
       for (let i = 0; i < root.children.length; i++) {
         yeartextString += '<p>' + root.children.item(i)?.textContent + '</p>'
       }
-      store.setBackground(yeartextString)
+      store.background = yeartextString
     } else {
       const response = await $fetch.raw<BlobPart>(
         pathToFileURL(backgrounds[0]).href,
@@ -202,7 +202,7 @@ export async function refreshBackgroundImgPreview(force = false) {
       })
 
       URL.revokeObjectURL(usePresentStore().background)
-      store.setBackground(URL.createObjectURL(file))
+      store.background = URL.createObjectURL(file)
       type = 'custom'
     }
     ipcRenderer.send('startMediaDisplay', getAllPrefs())
@@ -226,19 +226,18 @@ export async function getMediaWindowDestination() {
     const store = usePresentStore()
     const { t } = useNuxtApp().$i18n
     const screenInfo = (await ipcRenderer.invoke('getScreenInfo')) as ScreenInfo
-    store.setScreens(
-      screenInfo.otherScreens.map((screen) => {
-        return {
-          id: screen.id,
-          class: 'display',
-          title: `${t('screen')} ${screen.humanFriendlyNumber} ${
-            screen.size.width && screen.size.height
-              ? ` (${screen.size.width}x${screen.size.height}) (ID: ${screen.id})`
-              : ''
-          }`,
-        }
-      }),
-    )
+    store.screens = screenInfo.otherScreens.map((screen) => {
+      return {
+        id: screen.id,
+        class: 'display',
+        title: `${t('screen')} ${screen.humanFriendlyNumber} ${
+          screen.size.width && screen.size.height
+            ? ` (${screen.size.width}x${screen.size.height}) (ID: ${screen.id})`
+            : ''
+        }`,
+      }
+    })
+
     const output = getPrefs<number | 'window'>('media.preferredOutput')
     if (output !== 'window' && screenInfo.otherScreens.length > 0) {
       const pref = screenInfo.otherScreens.find((d) => d.id === output)

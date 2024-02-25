@@ -8,7 +8,7 @@
       <v-card>
         <v-row no-gutters class="pa-2">
           <v-col cols="12">
-            <form-input v-model="newName" hide-details="auto" clearable />
+            <v-text-field v-model="newName" clearable />
           </v-col>
           <v-col>
             <v-checkbox v-model="saveRename" :label="$t('zoomSaveRename')" />
@@ -67,12 +67,11 @@
         <v-icon icon="i-mdi:microphone-off" size="small" />
       </v-btn>
       <v-spacer />
-      <form-input
+      <v-autocomplete
         v-model="participants"
         v-model:search-input="participantSearch"
-        field="autocomplete"
         color="white"
-        item-title="displayName"
+        item-title="userName"
         item-value="userId"
         :loading="allParticipants.length == 0"
         :label="$t('spotlightParticipants')"
@@ -81,28 +80,27 @@
         style="max-width: 500px"
         hide-details="auto"
         chips
-        small-chips
-        deletable-chips
+        closable-chips
         multiple
         clearable
         return-object
-        @change="participantSearch = ''"
+        @update:model-value="participantSearch = ''"
       >
         <template #item="{ item }">
           <v-list-item-action>
             <v-checkbox-btn
-              :value="participants.includes(item)"
-              @click="toggleParticipant(item)"
+              :value="participants.includes(item.raw)"
+              @click="toggleParticipant(item.raw)"
             />
           </v-list-item-action>
-          <v-list-item-title>{{ item.displayName }}</v-list-item-title>
+          <v-list-item-title>{{ item.raw.userName }}</v-list-item-title>
           <v-list-item-action>
-            <v-btn icon @click.stop="atRename(item)">
+            <v-btn icon @click.stop="atRename(item.raw)">
               <v-icon icon="i-mdi:pencil" size="small" />
             </v-btn>
           </v-list-item-action>
         </template>
-      </form-input>
+      </v-autocomplete>
       <v-btn
         :icon="spotlightActive ? 'i-mdi:account-minus' : 'i-mdi:account-box'"
         size="small"
@@ -115,7 +113,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
-import type { Participant } from '@zoomus/websdk/embedded'
+import type { Participant } from '@zoom/meetingsdk/embedded'
 
 const store = useZoomStore()
 const { started, coHost, hostID } = storeToRefs(store)
@@ -135,7 +133,7 @@ const participantSearch = ref('')
 const participants = ref<Participant[]>([])
 const allParticipants = computed(() => {
   return store.participants.filter(
-    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name'),
+    (p) => !p.isHold && p.userName !== getPrefs<string>('app.zoom.name'),
   )
 })
 const toggleParticipant = (participant: Participant) => {
@@ -163,7 +161,7 @@ const saveRename = ref(true)
 const participant = ref<Participant | null>(null)
 const atRename = (p: Participant) => {
   participant.value = p
-  newName.value = p.displayName
+  newName.value = p.userName
   saveRename.value = true
 }
 const renamePerson = async (p: Participant | null, name = '') => {
@@ -171,12 +169,12 @@ const renamePerson = async (p: Participant | null, name = '') => {
   renaming.value = true
   await renameParticipant(zoomSocket(), name, {
     id: p.userId,
-    name: p.displayName,
+    name: p.userName,
   })
   if (saveRename.value) {
     const renames = getPrefs<string[]>('app.zoom.autoRename')
-    if (!renames.find((r) => r.split('=')[0] === p.displayName)) {
-      renames.push(`${p.displayName}=${name}`)
+    if (!renames.find((r) => r.split('=')[0] === p.userName)) {
+      renames.push(`${p.userName}=${name}`)
       setPrefs('app.zoom.autoRename', renames)
     }
   }
@@ -210,9 +208,9 @@ const spotlightParticipants = () => {
       toggleSpotlight(zoomSocket(), true, hostID.value)
     }
     participants.value = []
-    store.setSpotlights([])
+    store.spotlights = []
   } else {
-    store.setSpotlights(participants.value.map((p) => p.userId))
+    store.spotlights = participants.value.map((p) => p.userId)
     for (const p of participants.value) {
       toggleSpotlight(zoomSocket(), true, p.userId)
       toggleMic(zoomSocket(), false, p.userId)

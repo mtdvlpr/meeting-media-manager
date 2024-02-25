@@ -24,12 +24,13 @@
         no-gutters
         class="pa-4 align-center"
       >
-        <song-picker
+        <input-song
           v-if="type === 'song'"
           v-model="jwFile"
           :disabled="loading || saving || processing"
+          clearable
         />
-        <publication-picker
+        <input-publication
           v-else-if="type === 'jwOrgPub'"
           v-model="jwOrgPub"
           :disabled="loading || saving || processing"
@@ -83,13 +84,13 @@
           :prefix="prefix"
           :media="media"
           :show-input="!!type && type !== 'jwOrgVideo'"
-          :show-prefix="!!jwFile || files.length > 0"
           @refresh="emit('refresh')"
         />
       </template>
     </v-card-text>
     <v-divider />
     <v-card-actions>
+      <v-spacer />
       <v-btn
         :disabled="loading || saving || processing"
         color="error"
@@ -129,10 +130,12 @@ const props = defineProps<{
   uploadMedia?: Boolean
   media: (MeetingFile | LocalFile)[]
 }>()
+
 const emit = defineEmits<{
   (e: 'refresh'): void
   (e: 'cancel'): void
 }>()
+
 // File prefix
 const prefix = ref('')
 const { t } = useI18n()
@@ -152,10 +155,6 @@ const types = [
     value: 'jwOrgVideo',
   },
   {
-    label: t('selectPublication'),
-    value: 'jwOrgPub',
-  },
-  {
     label: t('jwlplaylist'),
     value: 'jwlplaylist',
   },
@@ -170,7 +169,7 @@ const selectVideo = (video: VideoFile) => (jwFile.value = video)
 const processing = ref(false)
 
 // Add media from JW.org publication
-const jwOrgPub = ref()
+const jwOrgPub = ref<{ title: string; pub: string } | null>(null)
 watch(jwOrgPub, async (val) => {
   if (val) {
     const jwpub = (
@@ -247,13 +246,12 @@ const processPlaylist = async (filePath: string) => {
   await Promise.allSettled(promises)
   processing.value = false
 }
+
 const processPlaylistItem = async (
   index: number,
   m: PlaylistItem,
   filePath: string,
 ) => {
-  console.log(m)
-
   if (m.FilePath) {
     files.value.push({
       safeName: `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
@@ -316,7 +314,7 @@ const removeFile = (index: number) => {
 // Save files
 const saving = ref(false)
 watch(saving, (val) => {
-  useStatStore().setNavDisabled(val)
+  useStatStore().navDisabled = val
 })
 const { online } = useOnline()
 const date = useRouteQuery<string>('date', '')
@@ -379,13 +377,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
   }
 
   const congPromises: Promise<void>[] = []
-  const path = join(
-    getPrefs('cloud.enable')
-      ? join(getPrefs('cloud.path'), 'Additional')
-      : mediaPath(),
-    date.value,
-    file.safeName,
-  )
+  const path = join(mediaPath(), date.value, file.safeName)
 
   // JWPUB extract
   if (file.contents) {
@@ -404,7 +396,6 @@ const processFile = async (file: LocalFile | VideoFile) => {
     file.folder = date.value
     await downloadIfRequired({
       file: file as VideoFile,
-      additional: true,
     })
 
     if (file.subtitles) {
@@ -428,9 +419,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
       ).map((m) => JSON.parse(m))
 
       const markerPath = join(
-        getPrefs('cloud.enable')
-          ? join(getPrefs('cloud.path'), 'Additional')
-          : mediaPath(),
+        mediaPath(),
         file.folder,
         changeExt(file.safeName, 'json'),
       )

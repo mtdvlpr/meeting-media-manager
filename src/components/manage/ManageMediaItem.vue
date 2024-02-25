@@ -16,8 +16,8 @@
               item.congSpecific
                 ? 'info'
                 : item.isLocal === undefined || item.isLocal
-                ? 'primary'
-                : 'secondary'
+                  ? 'primary'
+                  : 'secondary'
             "
           >
             <v-img
@@ -50,36 +50,6 @@
             aria-label="rename file"
             @click="emit('edit')"
           />
-          <template v-if="getPrefs('cloud.enable')">
-            <template v-if="item.isLocal !== undefined && !item.recurring">
-              <template v-if="!item.isLocal">
-                <v-btn
-                  v-if="item.hidden"
-                  icon="i-mdi:eye-off"
-                  size="small"
-                  variant="text"
-                  @click="unhide(item)"
-                />
-                <v-btn
-                  v-else
-                  icon="i-mdi:eye"
-                  size="small"
-                  variant="text"
-                  @click="hide(item)"
-                />
-              </template>
-              <template v-else>
-                <v-btn
-                  color="red-lighten-1"
-                  icon="i-mdi:delete"
-                  variant="text"
-                  size="small"
-                  :loading="item.loading"
-                  @click="remove(item)"
-                />
-              </template>
-            </template>
-          </template>
           <template
             v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
           >
@@ -125,13 +95,11 @@
                       : 'warning'
                   "
                   :icon="
-                    'i-mdi:' +
-                    (item.isLocal === undefined
-                      ? 'plus'
+                    item.isLocal === undefined
+                      ? 'i-mdi:plus-circle'
                       : item.hidden
-                      ? 'check'
-                      : 'minus') +
-                    '-circle'
+                        ? 'i-mdi:check-circle'
+                        : 'i-mdi:minus-circle'
                   "
                   :loading="item.loading"
                   v-bind="attrs"
@@ -148,13 +116,11 @@
                   : 'warning'
               "
               :icon="
-                'i-mdi:' +
-                (item.isLocal === undefined
-                  ? 'plus'
+                item.isLocal === undefined
+                  ? 'i-mdi:plus-circle'
                   : item.hidden
-                  ? 'check'
-                  : 'minus') +
-                '-circle'
+                    ? 'i-mdi:check-circle'
+                    : 'i-mdi:minus-circle'
               "
               :loading="item.loading"
               @click="atClick(item)"
@@ -183,7 +149,7 @@
 </template>
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
-import { extname, join, normalize } from 'upath'
+import { extname, join } from 'upath'
 import type { LocalFile, MeetingFile } from '~~/types'
 
 const props = defineProps<{
@@ -203,40 +169,6 @@ const preview = ref('')
 const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
-
-const unhide = (item: MeetingFile | LocalFile) => {
-  if (!item.filepath) return
-  mv(
-    normalize(item.filepath),
-    normalize(item.filepath).replace(
-      join(getPrefs('cloud.path'), 'Hidden'),
-      normalize(mediaPath()!),
-    ),
-  )
-  item.hidden = false
-}
-
-const hide = (item: MeetingFile | LocalFile) => {
-  if (!item.filepath) return
-  mv(
-    normalize(item.filepath),
-    normalize(item.filepath).replace(
-      normalize(mediaPath()!),
-      join(getPrefs('cloud.path'), 'Hidden'),
-    ),
-  )
-  item.hidden = true
-}
-
-const remove = (item: MeetingFile | LocalFile) => {
-  if (!item.filepath) return
-  rm(
-    normalize(item.filepath).replace(
-      normalize(mediaPath()!),
-      join(getPrefs('cloud.path'), 'Additional'),
-    ),
-  )
-}
 
 const getPreview = (item: MeetingFile | LocalFile) => {
   if (previewName.value === item.safeName) {
@@ -347,10 +279,10 @@ const typeIcon = (filename: string) => {
       return isImage(filename)
         ? 'i-mdi:image'
         : isVideo(filename)
-        ? 'i-mdi:movie-open'
-        : isAudio(filename)
-        ? 'i-mdi:headphones'
-        : 'i-mdi:file-question'
+          ? 'i-mdi:movie-open'
+          : isAudio(filename)
+            ? 'i-mdi:headphones'
+            : 'i-mdi:file-question'
   }
 }
 </script>

@@ -5,15 +5,16 @@
       <v-text-field
         v-model="searchQuery"
         :label="`Search through all ${allVideos.length} videos`"
+        clearable
       />
       <loading-icon v-if="loading" />
       <v-row v-else style="width: 100%" class="ma-0">
         <template v-for="video in filteredVideos" :key="video.guid">
           <template v-if="filteredVideos.length > 30">
             <v-lazy :options="{ threshold: 0.5 }">
-              <v-chip class="me-1 mb-1" @click="selectVideo(video)">{{
-                video.title
-              }}</v-chip>
+              <v-chip class="me-1 mb-1" @click="selectVideo(video)">
+                {{ video.title }}
+              </v-chip>
             </v-lazy>
           </template>
           <v-col v-else sm="4" md="3" lg="2">

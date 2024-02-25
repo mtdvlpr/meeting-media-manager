@@ -20,13 +20,13 @@ export interface ZoomPrefs {
   autoStartTime: number | null
 }
 
-export const dateFormats = [
+export const DATE_FORMATS = [
   'DD-MM-YYYY',
   'YYYY-MM-DD',
   'DD-MM-YYYY - dddd',
   'YYYY-MM-DD - dddd',
 ] as const
-export type DateFormat = (typeof dateFormats)[number]
+export type DateFormat = (typeof DATE_FORMATS)[number]
 
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -34,7 +34,7 @@ export interface AppPrefs {
   autoOpenFolderWhenDone: boolean
   autoQuitWhenDone: boolean
   autoRunAtBoot: boolean
-  // autoStartSync: boolean
+  autoStartSync: boolean
   betaUpdates: boolean
   congregationName: string | null
   customCachePath: string | null
@@ -49,11 +49,6 @@ export interface AppPrefs {
   zoom: ZoomPrefs
 }
 
-export interface CloudPrefs {
-  enable: boolean
-  path: string | null
-}
-
 export interface CongPrefs {
   enable: boolean
   server: string | null
@@ -64,7 +59,7 @@ export interface CongPrefs {
 }
 
 export const RESOLUTIONS = ['240p', '360p', '480p', '720p'] as const
-export type Res = (typeof RESOLUTIONS)[number]
+export type Resolution = (typeof RESOLUTIONS)[number]
 
 export interface MediaPrefs {
   autoPlayFirst: boolean
@@ -124,7 +119,6 @@ export interface MeetingPrefs {
 export interface PrefStore {
   app: AppPrefs
   cong: CongPrefs
-  cloud: CloudPrefs
   media: MediaPrefs
   meeting: MeetingPrefs
 }

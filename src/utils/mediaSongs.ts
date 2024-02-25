@@ -5,10 +5,12 @@ import type { FadeOutType, VideoFile } from '~~/types'
 
 export async function getSongs() {
   const store = useMediaStore()
-  const result: VideoFile[] = await getMediaLinks({
-    pubSymbol: store.songPub,
-    format: 'MP4',
-  })
+  const result: VideoFile[] = (
+    await getMediaLinks({
+      pubSymbol: store.songPub,
+      format: 'MP4',
+    })
+  ).filter((song) => song.track <= NR_OF_KINGDOM_SONGS)
 
   const fallbackLang = getPrefs<string>('media.langFallback')
 
@@ -20,7 +22,10 @@ export async function getSongs() {
     })
 
     fallback.forEach((song) => {
-      if (!result.find((s) => s.track === song.track)) {
+      if (
+        song.track <= NR_OF_KINGDOM_SONGS &&
+        !result.find((s) => s.track === song.track)
+      ) {
         result.push(song)
       }
     })
@@ -40,7 +45,7 @@ export function autoStartMusic() {
   const meetingDay = isMeetingDay()
   if (!meetingDay) return
 
-  const now = useNuxtApp().$dayjs()
+  const now = useDayjs()()
   const autoStop = getPrefs<boolean>('meeting.enableMusicFadeOut')
   const stopType = getPrefs<FadeOutType>('meeting.musicFadeOutType')
   const fadeOutTime = autoStop
@@ -77,10 +82,9 @@ export async function shuffleMusic(stop = false, immediately = false) {
 
   const onProgress = (_e: IpcRendererEvent, progress: number[]) => {
     if (useMediaStore().musicFadeOut && store.musicFadeOut) {
-      const { $dayjs } = useNuxtApp()
-      store.setMusicFadeOut(
-        $dayjs.duration(progress[1] - progress[0], 's').format('mm:ss'),
-      )
+      store.musicFadeOut = useDayjs()
+        .duration(progress[1] - progress[0], 's')
+        .format('mm:ss')
     }
   }
 
@@ -106,10 +110,10 @@ export async function shuffleMusic(stop = false, immediately = false) {
       ipcRenderer.send('hideMedia')
     }
 
-    store.setMusicFadeOut('')
+    store.musicFadeOut = ''
   } else {
     if (getPrefs<boolean>('meeting.enableMusicFadeOut')) {
-      const now = useNuxtApp().$dayjs()
+      const now = useDayjs()()
       const fadeOutTime = getPrefs<number>('meeting.musicFadeOutTime')
       if (getPrefs<FadeOutType>('meeting.musicFadeOutType') === 'smart') {
         const day = isMeetingDay()
@@ -129,11 +133,11 @@ export async function shuffleMusic(stop = false, immediately = false) {
             .subtract(6, 's')
 
           if (timeToStop.isAfter(now)) {
-            store.setMusicFadeOut(timeToStop)
+            store.musicFadeOut = timeToStop
           }
         }
       } else {
-        store.setMusicFadeOut(now.add(fadeOutTime, 'm'))
+        store.musicFadeOut = now.add(fadeOutTime, 'm')
       }
     }
 
@@ -161,7 +165,11 @@ export async function shuffleMusic(stop = false, immediately = false) {
               format: mediaFormat.toUpperCase(),
               lang: mediaLang,
             })
-          ).filter((item) => extname(item.url) === `.${mediaFormat}`)
+          ).filter(
+            (item) =>
+              item.track <= NR_OF_KINGDOM_SONGS &&
+              extname(item.url) === `.${mediaFormat}`,
+          )
         : findAll(
             join(pubPath(), '..', mediaLang, songPub, '**', `*.${mediaFormat}`),
           ).map((item) => ({
@@ -201,7 +209,7 @@ async function playSignLanguageSong(
   ipcRenderer.send('showMedia', { src: path })
 
   if (!fadeOut) {
-    store.setMusicFadeOut('00:00')
+    store.musicFadeOut = '00:00'
   }
 
   ipcRenderer.on('videoEnd', () => {
@@ -238,17 +246,16 @@ async function createAudioElement(
   audio.oncanplay = () => {
     audio.volume = getPrefs<number>('meeting.musicVolume') / 100
     if (!fadeOut) {
-      store.setMusicFadeOut('..:..')
+      store.musicFadeOut = '..:..'
     }
   }
   audio.ontimeupdate = () => {
-    const { $dayjs } = useNuxtApp()
-    const duration = $dayjs
+    const duration = useDayjs()
       .duration(audio.duration - audio.currentTime, 's')
       .format('mm:ss')
 
     if (store.musicFadeOut && !fadeOut) {
-      store.setMusicFadeOut(duration)
+      store.musicFadeOut = duration
     }
   }
 

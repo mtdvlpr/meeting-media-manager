@@ -73,6 +73,7 @@ function createMainWindow(
     }
 
     win.on('move', onMove)
+    // @ts-expect-error: close event does not exist
     win.on('close', onClose)
   })
 

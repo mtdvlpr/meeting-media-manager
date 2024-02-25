@@ -9,14 +9,13 @@
       @cancel="dialog = false"
       @confirm="confirmZoomPart()"
     >
-      <form-input
+      <v-autocomplete
         v-if="!!zoomClient"
         v-model="participant"
-        field="autocomplete"
         :loading="participants.length === 0"
         :label="$t('unmuteParticipant')"
         :items="participants"
-        item-title="displayName"
+        item-title="userName"
         item-value="userId"
         return-object
       />
@@ -37,7 +36,7 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
-import type { Participant } from '@zoomus/websdk/embedded'
+import type { Participant } from '@zoom/meetingsdk/embedded'
 import type { ZoomPrefs } from '~~/types'
 
 const date = useRouteQuery<string>('date', '')
@@ -115,7 +114,7 @@ whenever(coHost, () => {
 const participant = ref<Participant | null>(null)
 const participants = computed(() =>
   allParticipants.value.filter(
-    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name'),
+    (p) => !p.isHold && p.userName !== getPrefs<string>('app.zoom.name'),
   ),
 )
 onBeforeUnmount(() => {
@@ -138,9 +137,9 @@ const initZoomIntegration = async () => {
   if (!enable || !name || !id || !password) return
 
   listenToZoomSocket()
-  const { default: zoomSDK } = await import('@zoomus/websdk/embedded')
+  const { default: zoomSDK } = await import('@zoom/meetingsdk/embedded')
   const client = zoomSDK.createClient()
-  zoomStore.setClient(client)
+  zoomStore.client = client
   try {
     await client
       .init({
@@ -162,7 +161,7 @@ const initZoomIntegration = async () => {
     const socket = zoomSocket()
     if (socket) {
       log.debug('Found socket')
-      zoomStore.setWebsocket(socket)
+      zoomStore.websocket = socket
     }
   }, MS_IN_SEC)
 

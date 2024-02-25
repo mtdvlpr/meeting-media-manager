@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { join } from 'upath'
 import { writeJson } from 'fs-extra'
 import {
@@ -5,7 +6,12 @@ import {
   ipcRendererInvoke,
   parseElectronApp,
 } from 'electron-playwright-helpers'
-import { expect, Page, _electron, ElectronApplication } from '@playwright/test'
+import {
+  expect,
+  _electron,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import { sync } from 'fast-glob'
 import { name } from '../../package.json'
 import { delay } from './generalHelpers'

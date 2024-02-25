@@ -8,8 +8,8 @@ import {
   nativeTheme,
   shell,
   dialog,
-  OpenDialogOptions,
-  RelaunchOptions,
+  type OpenDialogOptions,
+  type RelaunchOptions,
   session,
 } from 'electron'
 import { init } from '@sentry/electron/main'
@@ -78,6 +78,7 @@ try {
   if (existsSync(join(app.getPath('userData'), 'disableHardwareAcceleration')))
     app.disableHardwareAcceleration()
 } catch (e) {
+  // eslint-disable-next-line no-console
   console.error(e)
 }
 

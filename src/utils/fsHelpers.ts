@@ -70,7 +70,7 @@ export function sanitize(name: string, isFile = false, first = true): string {
   const ext = isFile ? extname(name).toLowerCase() : ''
 
   // Remove special characters from filename
-  name = strip(basename(name, ext), 'file') + ext
+  name = strip(isFile ? basename(name, ext) : name, 'file') + ext
   const mPath = mediaPath()
 
   if (isFile && mPath) {

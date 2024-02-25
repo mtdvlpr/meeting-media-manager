@@ -14,10 +14,7 @@
           </v-btn>
         </template>
         <template #prepend>
-          <v-avatar
-            rounded="0"
-            image="https://raw.githubusercontent.com/sircharlo/meeting-media-manager/master/build/icons/icon.png"
-          />
+          <v-avatar rounded="0" image="~/assets/img/icon.png" />
         </template>
       </v-list-item>
     </v-list>
@@ -90,9 +87,8 @@
 import { useIpcRenderer } from '@vueuse/electron'
 const { t } = useI18n()
 const localePath = useLocalePath()
-const { navDisabled, showMediaPlayback, showMusicButton, online } = storeToRefs(
-  useStatStore(),
-)
+const { navDisabled, showMediaPlayback, showMusicButton, online } =
+  storeToRefs(useStatStore())
 
 const navItems = computed(() => {
   const items = [
@@ -132,6 +128,7 @@ const toggleMusic = async () => {
   await shuffleMusic(!!musicFadeOut.value)
   musicLoading.value = false
 }
+
 watch(
   musicFadeOut,
   (val) => {

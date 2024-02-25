@@ -1,10 +1,16 @@
-import type { PrefStore } from '~~/types'
-export const PREFS = {
+import type {
+  DateFormat,
+  FadeOutType,
+  PrefStore,
+  Resolution,
+  Theme,
+} from '~~/types'
+export const DEFAULT_PREFS = {
   app: {
     autoOpenFolderWhenDone: false,
     autoQuitWhenDone: false,
     autoRunAtBoot: false,
-    // autoStartSync: false,
+    autoStartSync: false,
     betaUpdates: false,
     congregationName: null,
     customCachePath: null,
@@ -35,10 +41,6 @@ export const PREFS = {
       autoStartMeeting: false,
       autoStartTime: 1,
     },
-  },
-  cloud: {
-    enable: false,
-    path: null,
   },
   cong: {
     enable: false,
@@ -91,7 +93,7 @@ export const PREFS = {
   },
 } satisfies PrefStore
 
-export const ENUMS = {
+export const PREF_ENUMS = {
   theme: ['system', 'light', 'dark'],
   musicFadeOutType: ['smart', 'timer'],
   outputFolderDateFormat: [
@@ -101,6 +103,11 @@ export const ENUMS = {
     'DD-MM-YYYY - dddd',
   ],
   maxRes: ['240p', '360p', '480p', '720p'],
+} satisfies {
+  theme: Theme[]
+  musicFadeOutType: FadeOutType[]
+  outputFolderDateFormat: DateFormat[]
+  maxRes: Resolution[]
 }
 
 export const FORCIBLE = [
@@ -154,9 +161,3 @@ export const FORCIBLE = [
   'meeting.weDay',
   'meeting.weStartTime',
 ]
-
-module.exports = {
-  PREFS,
-  ENUMS,
-  FORCIBLE,
-}

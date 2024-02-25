@@ -5,7 +5,7 @@ import {
   BrowserWindow,
   app,
   shell,
-  BrowserWindowConstructorOptions,
+  type BrowserWindowConstructorOptions,
 } from 'electron'
 import { appLongName } from './main'
 const isDev = process.env.NODE_ENV === 'development'

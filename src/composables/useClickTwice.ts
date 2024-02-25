@@ -1,5 +1,6 @@
 import { MS_IN_SEC } from './../constants/general'
-export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
+
+export default function <T = any>(atClickedTwice: (object?: T) => void) {
   const clickedOnce = ref(false)
 
   const atClick = (object?: T) => {

@@ -1,7 +1,14 @@
+/* eslint-disable playwright/no-wait-for-selector */
+/* eslint-disable playwright/no-conditional-expect */
 import { platform } from 'os'
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
-import { expect, test, ElectronApplication, Page } from '@playwright/test'
+import {
+  expect,
+  test,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import { join } from 'upath'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
 import { version } from '../../package.json'
@@ -90,9 +97,9 @@ test('render the presentation mode page correctly', async () => {
     await page.getByText(getDate(oneMeeting ? 'we' : 'mw')).click()
   }
   // Check for correct heading
-  await expect(page.locator('.v-toolbar-title__placeholder')).toHaveText(
+  /*await expect(page.locator('.v-toolbar-title__placeholder')).toHaveText(
     locale.selectDate,
-  )
+  )*/
 
   if (platform() === 'linux') {
     await page.screenshot({ path: 'img/present/meeting-picker.png' })

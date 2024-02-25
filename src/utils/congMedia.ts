@@ -1,7 +1,7 @@
+import type { LocaleObject } from '@nuxtjs/i18n'
 import type { Dayjs } from 'dayjs'
 import { stat } from 'fs-extra'
 import { join, extname, basename } from 'upath'
-import type { LocaleObject } from '#i18n'
 import type { MeetingFile, DateFormat, CongFile } from '~~/types'
 
 export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
@@ -34,11 +34,11 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
   // Get cong media
   if (mediaFolder?.children) {
     let recurringMedia: MeetingFile[] = []
-    const { $dayjs } = useNuxtApp()
+    const dayjs = useDayjs()
     mediaFolder.children
       .filter((date) => !!date.children)
       .forEach((date) => {
-        const day = $dayjs(date.basename, dateFormat)
+        const day = dayjs(date.basename, dateFormat)
         const isRecurring = date.basename === 'Recurring'
         const isMeetingDay =
           day.isValid() &&
@@ -93,14 +93,14 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
 
   // Set hidden media
   if (hiddenFolder?.children) {
-    const { $dayjs } = useNuxtApp()
+    const dayjs = useDayjs()
     const meetings = mediaStore.meetings
 
     hiddenFolder.children
       .filter((date) => !!date.children)
       .forEach((date) => {
         const mediaMap = meetings.get(date.basename)
-        const day = $dayjs(date.basename, dateFormat)
+        const day = dayjs(date.basename, dateFormat)
         const isMeetingDay =
           day.isValid() &&
           day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]') &&
@@ -231,9 +231,9 @@ export async function syncCongMediaByDate(date: string) {
 
 export async function syncCongMedia(
   baseDate: Dayjs,
-  setProgress: (loaded: number, total: number, global?: boolean) => void,
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ) {
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   const statStore = useStatStore()
   const mediaStore = useMediaStore()
   statStore.startPerf({
@@ -244,7 +244,7 @@ export async function syncCongMedia(
     Array.from(mediaStore.meetings)
       .filter(([date]) => {
         if (date === 'Recurring') return true
-        const dateObj = $dayjs(
+        const dateObj = dayjs(
           date,
           getPrefs<DateFormat>('app.outputFolderDateFormat'),
         )
@@ -422,7 +422,7 @@ export async function renameCongFile(
     }
   } else if (file.type === 'directory') {
     const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
-    const date = useNuxtApp().$dayjs(
+    const date = useDayjs()(
       file.basename,
       dateFormat,
       oldLocale.dayjs ?? oldVal,

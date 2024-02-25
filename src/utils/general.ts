@@ -1,5 +1,5 @@
 import { pathToFileURL } from 'url'
-import { cloneDeep as _cloneDeep } from 'lodash'
+import _cloneDeep from 'lodash/cloneDeep'
 
 import { pathExists } from 'fs-extra'
 import { join } from 'upath'
@@ -8,6 +8,9 @@ import { JW_ICONS_FONT } from '~/constants/general'
 const intervals: Record<string, NodeJS.Timeout> = {}
 
 export const cloneDeep = _cloneDeep
+
+export const delay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
 
 export const parseRes = (res?: string) => {
   if (!res) return 0
@@ -61,16 +64,16 @@ export function executeBeforeMeeting(
     if (!day) return
     const startTime = getPrefs<string | null>(`meeting.${day}StartTime`)
     const meetingStarts = startTime?.split(':') ?? ['0', '0']
-    const { $dayjs } = useNuxtApp()
-    const timeToStop = $dayjs()
+    const dayjs = useDayjs()
+    const timeToStop = dayjs()
       .hour(+meetingStarts[0])
       .minute(+meetingStarts[1])
       .second(0)
       .millisecond(0)
       .subtract(mins, 'm')
     intervals[name] = setInterval(() => {
-      const timeLeft = $dayjs
-        .duration(timeToStop.diff($dayjs()), 'ms')
+      const timeLeft = dayjs
+        .duration(timeToStop.diff(dayjs()), 'ms')
         .asSeconds()
       if (timeLeft.toFixed(0) === '0' || timeLeft.toFixed(0) === '-0') {
         action()

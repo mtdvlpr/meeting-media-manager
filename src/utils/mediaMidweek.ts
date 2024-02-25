@@ -4,8 +4,8 @@ import { join } from 'upath'
 import type { MultiMediaExtractRef, DateFormat } from '~~/types'
 
 export async function getMwMedia(date: string) {
-  const { $dayjs } = useNuxtApp()
-  const mwDay = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+  const dayjs = useDayjs()
+  const mwDay = dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const baseDate = mwDay.startOf('week')
 
   let issue = baseDate.format('YYYYMM') + '00'
@@ -43,7 +43,7 @@ export async function getMwMedia(date: string) {
     livingTitle = living[Math.floor(living.length / 2)]?.FeatureTitle
   }
 
-  if (treasures.FeatureTitle && apply.FeatureTitle && livingTitle) {
+  if (treasures?.FeatureTitle && apply?.FeatureTitle && livingTitle) {
     writeJson(join(pubPath()!, 'mwb', 'headings.json'), {
       treasures: treasures.FeatureTitle,
       apply: apply.FeatureTitle,
@@ -60,7 +60,9 @@ export async function getMwMedia(date: string) {
     let lastSongIdLookup = mms
       .reverse()
       .findIndex(
-        (m) => m.BeginParagraphOrdinal && m.BeginParagraphOrdinal >= 22,
+        (m) =>
+          m.BeginParagraphOrdinal &&
+          m.BeginParagraphOrdinal >= LAST_SONG_PAR_NR,
       )
     if (lastSongIdLookup === -1) {
       lastSongIdLookup = mms

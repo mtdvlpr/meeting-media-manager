@@ -27,37 +27,29 @@ interface StatStore {
   downloads: Stats
 }
 
-const defaultState: StatStore = {
-  online: false, // Whether the user is connected to the internet
-  navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
-  syncInProgress: [], // Which media is currently being synced
-  showMediaPlayback: false, // Whether the media playback nav item should be shown
-  showMusicButton: false,
-  initialLoad: true, // Whether the app is loading for the first time
-  updateSuccess: true, // Whether the update was successful
-  performance: new Map(), // A map of performance data about how fast a file was downloaded
-  downloads: {
-    // How much data was fetched from the internet and how much was already in the cache
-    jwOrg: {
-      cache: [],
-      live: [],
-    },
-    cong: {
-      cache: [],
-      live: [],
-    },
-  },
-}
-
 export const useStatStore = defineStore('stats', {
-  state: (): StatStore => cloneDeep(defaultState),
+  state: (): StatStore => ({
+    online: false, // Whether the user is connected to the internet
+    navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
+    syncInProgress: [], // Which media is currently being synced
+    showMediaPlayback: false, // Whether the media playback nav item should be shown
+    showMusicButton: false,
+    initialLoad: true, // Whether the app is loading for the first time
+    updateSuccess: true, // Whether the update was successful
+    performance: new Map(), // A map of performance data about how fast a file was downloaded
+    downloads: {
+      // How much data was fetched from the internet and how much was already in the cache
+      jwOrg: {
+        cache: [],
+        live: [],
+      },
+      cong: {
+        cache: [],
+        live: [],
+      },
+    },
+  }),
   actions: {
-    setOnline(online: boolean) {
-      this.online = online
-    },
-    setNavDisabled(navDisabled: boolean) {
-      this.navDisabled = navDisabled
-    },
     setSyncInProgress(date: string, inProgress: boolean) {
       if (!inProgress) {
         const index = this.syncInProgress.indexOf(date)
@@ -68,25 +60,13 @@ export const useStatStore = defineStore('stats', {
         this.syncInProgress.push(date)
       }
     },
-    setShowMediaPlayback(showMediaPlayback: boolean) {
-      this.showMediaPlayback = showMediaPlayback
-    },
-    setShowMusicButton(showMusicButton: boolean) {
-      this.showMusicButton = showMusicButton
-    },
-    setInitialLoad(initialLoad: boolean) {
-      this.initialLoad = initialLoad
-    },
-    setUpdateSuccess(updateSuccess: boolean) {
-      this.updateSuccess = updateSuccess
-    },
     startPerf({ func, start }: { func: string; start: number }) {
-      this.performance.set(func, { start, stop: 0 })
+      this.performance = this.performance.set(func, { start, stop: 0 })
     },
     stopPerf({ func, stop }: { func: string; stop: number }) {
       const perf = this.performance.get(func)
       if (perf) {
-        this.performance.set(func, { ...perf, stop })
+        this.performance = this.performance.set(func, { ...perf, stop })
       }
     },
     clearPerf() {
@@ -104,7 +84,16 @@ export const useStatStore = defineStore('stats', {
       this.downloads[origin][source].push(file)
     },
     clearDownloads() {
-      this.downloads = cloneDeep(defaultState.downloads)
+      this.downloads = {
+        jwOrg: {
+          cache: [],
+          live: [],
+        },
+        cong: {
+          cache: [],
+          live: [],
+        },
+      }
     },
     printStats() {
       for (const [func, perf] of [...this.performance.entries()].sort(

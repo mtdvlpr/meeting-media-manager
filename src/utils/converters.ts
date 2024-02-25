@@ -14,21 +14,21 @@ import {
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
-import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'
+import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import type { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
   baseDate: Dayjs,
   now: Dayjs,
-  setProgress: (loaded: number, total: number, global?: boolean) => void,
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ) {
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   const files = findAll(join(mediaPath(), '*'), {
     onlyDirectories: true,
   })
     .map((path) => basename(path))
     .filter((dir) => {
-      const date = $dayjs(
+      const date = dayjs(
         dir,
         getPrefs<DateFormat>('app.outputFolderDateFormat'),
       )
@@ -104,34 +104,12 @@ export async function convertUnusableFiles(
 }
 
 export async function convertUnusableFilesByDate(date: string) {
-  if (getPrefs('cloud.enable')) {
-    const cloudPath = join(getPrefs('cloud.path'), 'Additional')
-    const cloudPdfFiles = findAll(join(cloudPath, date, '*pdf'))
-    const cloudSvgFiles = findAll(join(cloudPath, date, '*svg'))
-    const cloudHeicFiles = findAll(join(cloudPath, date, '*heic'))
-    const cloudConvertSvgPromises = cloudSvgFiles.map((svgFile) => {
-      convertSvg(svgFile)
-    })
-    const cloudConvertPdfPromises = cloudPdfFiles.map((pdfFile) =>
-      convertPdf(pdfFile),
-    )
-    const cloudConvertHEICPromises = cloudHeicFiles.map((heicFile) =>
-      convertHEIC(heicFile),
-    )
-    await Promise.all([
-      ...cloudConvertSvgPromises,
-      ...cloudConvertPdfPromises,
-      ...cloudConvertHEICPromises,
-    ])
-  }
   const mPath = mediaPath()
   if (!mPath) return
   const pdfFiles = findAll(join(mPath, date, '*pdf'))
   const svgFiles = findAll(join(mPath, date, '*svg'))
   const heicFiles = findAll(join(mPath, date, '*heic'))
-  const convertSvgPromises = svgFiles.map((svgFile) => {
-    convertSvg(svgFile)
-  })
+  const convertSvgPromises = svgFiles.map((svgFile) => convertSvg(svgFile))
   const convertPdfPromises = pdfFiles.map((pdfFile) => convertPdf(pdfFile))
   const convertHEICPromises = heicFiles.map((heicFile) => convertHEIC(heicFile))
   await Promise.all([
@@ -142,13 +120,13 @@ export async function convertUnusableFilesByDate(date: string) {
 }
 
 export async function convertToVLC() {
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   const mediaFolders = findAll(join(mediaPath(), '*/'), {
     onlyDirectories: true,
   })
     .map((d) => basename(d))
     .filter((d) =>
-      $dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid(),
+      dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid(),
     )
 
   if (mediaFolders.length === 0) return
@@ -206,7 +184,7 @@ export async function convertToVLCByDate(date: string) {
   )
 }
 
-function convertSvg(src: string) {
+async function convertSvg(src: string) {
   const div = document.createElement('div')
   const canvas = document.createElement('canvas')
   div.style.display = 'none'
@@ -405,7 +383,7 @@ async function setupFFmpeg(ffmpeg: any): Promise<void> {
       await chmod(entryPath, '777')
     }
     ffmpeg.setFfmpegPath(entryPath)
-    store.setFFmpeg(true)
+    store.ffMpeg = true
   } else {
     throw new Error('Could not extract FFmpeg!')
   }

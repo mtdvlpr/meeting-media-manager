@@ -1,5 +1,10 @@
 import { platform } from 'os'
-import { expect, test, ElectronApplication, Page } from '@playwright/test'
+import {
+  expect,
+  test,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
@@ -68,6 +73,7 @@ test('vlc playlist', async () => {
   await page.locator('button', { hasText: locale.fetchMedia }).click()
 
   // Wait for jw sync to complete successfully
+  // eslint-disable-next-line playwright/no-wait-for-selector
   await page.waitForSelector('div.bg-success:has-text("JW.org (English)")', {
     timeout: 0,
   })

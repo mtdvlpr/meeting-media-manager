@@ -18,12 +18,12 @@ export default function <
   fallback = 0,
   subKey?: T extends AppPrefs ? keyof S : undefined,
 ) {
-  const { t } = useNuxtApp().$i18n
+  const i18n = useI18n()
   const computedLabel = computed(() => {
     const value = subKey
       ? (unref(ref)[key] as S)[subKey] || fallback
       : unref(ref)[key] || fallback
-    return t(label).replace('<span>XX</span>', value.toString())
+    return i18n.t(label).replace('<span>XX</span>', value.toString())
   })
 
   return computedLabel

@@ -18,96 +18,96 @@ const schema: Schema<PrefStore> = {
     properties: {
       theme: {
         type: 'string',
-        enum: ENUMS.theme,
-        default: PREFS.app.theme,
+        enum: PREF_ENUMS.theme,
+        default: DEFAULT_PREFS.app.theme,
       },
       betaUpdates: {
         type: 'boolean',
-        default: PREFS.app.betaUpdates,
+        default: DEFAULT_PREFS.app.betaUpdates,
       },
       disableAutoUpdate: {
         type: 'boolean',
-        default: PREFS.app.disableAutoUpdate,
+        default: DEFAULT_PREFS.app.disableAutoUpdate,
       },
       disableHardwareAcceleration: {
         type: 'boolean',
-        default: PREFS.app.disableHardwareAcceleration,
+        default: DEFAULT_PREFS.app.disableHardwareAcceleration,
       },
       localAppLang: {
         type: ['string', 'null'],
-        default: PREFS.app.localAppLang,
+        default: DEFAULT_PREFS.app.localAppLang,
       },
       customCachePath: {
         type: ['string', 'null'],
-        default: PREFS.app.customCachePath,
+        default: DEFAULT_PREFS.app.customCachePath,
       },
       localOutputPath: {
         type: ['string', 'null'],
-        default: PREFS.app.localOutputPath,
+        default: DEFAULT_PREFS.app.localOutputPath,
       },
       congregationName: {
         type: ['string', 'null'],
-        default: PREFS.app.congregationName,
+        default: DEFAULT_PREFS.app.congregationName,
       },
       offline: {
         type: 'boolean',
-        default: PREFS.app.offline,
+        default: DEFAULT_PREFS.app.offline,
       },
       outputFolderDateFormat: {
         type: 'string',
-        enum: ENUMS.outputFolderDateFormat,
-        default: PREFS.app.outputFolderDateFormat,
+        enum: PREF_ENUMS.outputFolderDateFormat,
+        default: DEFAULT_PREFS.app.outputFolderDateFormat,
       },
       // autoStartSync: {
       //   type: 'boolean',
-      //   default: PREFS.app.autoStartSync,
+      //   default: DEFAULT_PREFS.app.autoStartSync,
       // },
       autoRunAtBoot: {
         type: 'boolean',
-        default: PREFS.app.autoRunAtBoot,
+        default: DEFAULT_PREFS.app.autoRunAtBoot,
       },
       autoQuitWhenDone: {
         type: 'boolean',
-        default: PREFS.app.autoQuitWhenDone,
+        default: DEFAULT_PREFS.app.autoQuitWhenDone,
       },
       autoOpenFolderWhenDone: {
         type: 'boolean',
-        default: PREFS.app.autoOpenFolderWhenDone,
+        default: DEFAULT_PREFS.app.autoOpenFolderWhenDone,
       },
       obs: {
         type: 'object',
         properties: {
           enable: {
             type: 'boolean',
-            default: PREFS.app.obs.enable,
+            default: DEFAULT_PREFS.app.obs.enable,
           },
           port: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.port,
+            default: DEFAULT_PREFS.app.obs.port,
           },
           password: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.password,
+            default: DEFAULT_PREFS.app.obs.password,
           },
           mediaScene: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.mediaScene,
+            default: DEFAULT_PREFS.app.obs.mediaScene,
           },
           imageScene: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.imageScene,
+            default: DEFAULT_PREFS.app.obs.imageScene,
           },
           cameraScene: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.cameraScene,
+            default: DEFAULT_PREFS.app.obs.cameraScene,
           },
           zoomScene: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.zoomScene,
+            default: DEFAULT_PREFS.app.obs.zoomScene,
           },
           useV4: {
             type: 'boolean',
-            default: PREFS.app.obs.useV4,
+            default: DEFAULT_PREFS.app.obs.useV4,
           },
         },
       },
@@ -116,55 +116,42 @@ const schema: Schema<PrefStore> = {
         properties: {
           enable: {
             type: 'boolean',
-            default: PREFS.app.zoom.enable,
+            default: DEFAULT_PREFS.app.zoom.enable,
           },
           name: {
             type: ['string', 'null'],
-            default: PREFS.app.zoom.name,
+            default: DEFAULT_PREFS.app.zoom.name,
           },
           id: {
             type: ['string', 'null'],
-            default: PREFS.app.zoom.id,
+            default: DEFAULT_PREFS.app.zoom.id,
           },
           password: {
             type: ['string', 'null'],
-            default: PREFS.app.obs.password,
+            default: DEFAULT_PREFS.app.obs.password,
           },
           spotlight: {
             type: 'boolean',
-            default: PREFS.app.zoom.spotlight,
+            default: DEFAULT_PREFS.app.zoom.spotlight,
           },
           autoRename: {
             type: 'array',
-            default: PREFS.app.zoom.autoRename,
+            default: DEFAULT_PREFS.app.zoom.autoRename,
             items: {
               type: 'string',
             },
           },
           autoStartMeeting: {
             type: 'boolean',
-            default: PREFS.app.zoom.autoStartMeeting,
+            default: DEFAULT_PREFS.app.zoom.autoStartMeeting,
           },
           autoStartTime: {
             type: 'number',
             minimum: 1,
             maximum: 10,
-            default: PREFS.app.zoom.autoStartTime,
+            default: DEFAULT_PREFS.app.zoom.autoStartTime,
           },
         },
-      },
-    },
-  },
-  cloud: {
-    type: 'object',
-    properties: {
-      enable: {
-        type: 'boolean',
-        default: PREFS.cloud.enable,
-      },
-      path: {
-        type: ['string', 'null'],
-        default: PREFS.cloud.path,
       },
     },
   },
@@ -173,27 +160,27 @@ const schema: Schema<PrefStore> = {
     properties: {
       enable: {
         type: 'boolean',
-        default: PREFS.cong.enable,
+        default: DEFAULT_PREFS.cong.enable,
       },
       server: {
         type: ['string', 'null'],
-        default: PREFS.cong.server,
+        default: DEFAULT_PREFS.cong.server,
       },
       username: {
         type: ['string', 'null'],
-        default: PREFS.cong.username,
+        default: DEFAULT_PREFS.cong.username,
       },
       password: {
         type: ['string', 'null'],
-        default: PREFS.cong.password,
+        default: DEFAULT_PREFS.cong.password,
       },
       port: {
         type: ['string', 'null'],
-        default: PREFS.cong.port,
+        default: DEFAULT_PREFS.cong.port,
       },
       dir: {
         type: ['string', 'null'],
-        default: PREFS.cong.dir,
+        default: DEFAULT_PREFS.cong.dir,
       },
     },
   },
@@ -202,102 +189,102 @@ const schema: Schema<PrefStore> = {
     properties: {
       lang: {
         type: ['string', 'null'],
-        default: PREFS.media.lang,
+        default: DEFAULT_PREFS.media.lang,
       },
       langFallback: {
         type: ['string', 'null'],
-        default: PREFS.media.langFallback,
+        default: DEFAULT_PREFS.media.langFallback,
       },
       langSubs: {
         type: ['string', 'null'],
-        default: PREFS.media.langSubs,
+        default: DEFAULT_PREFS.media.langSubs,
       },
       langUpdatedLast: {
         type: ['string', 'null'],
-        default: PREFS.media.langUpdatedLast,
+        default: DEFAULT_PREFS.media.langUpdatedLast,
       },
       maxRes: {
         type: 'string',
-        enum: ENUMS.maxRes,
-        default: PREFS.media.maxRes,
+        enum: PREF_ENUMS.maxRes,
+        default: DEFAULT_PREFS.media.maxRes,
       },
       enablePp: {
         type: 'boolean',
-        default: PREFS.media.enablePp,
+        default: DEFAULT_PREFS.media.enablePp,
       },
       enableMp4Conversion: {
         type: 'boolean',
-        default: PREFS.media.enableMp4Conversion,
+        default: DEFAULT_PREFS.media.enableMp4Conversion,
       },
       enableSubtitles: {
         type: 'boolean',
-        default: PREFS.media.enableSubtitles,
+        default: DEFAULT_PREFS.media.enableSubtitles,
       },
       keepOriginalsAfterConversion: {
         type: 'boolean',
-        default: PREFS.media.keepOriginalsAfterConversion,
+        default: DEFAULT_PREFS.media.keepOriginalsAfterConversion,
       },
       enableVlcPlaylistCreation: {
         type: 'boolean',
-        default: PREFS.media.enableVlcPlaylistCreation,
+        default: DEFAULT_PREFS.media.enableVlcPlaylistCreation,
       },
       enableMediaDisplayButton: {
         type: 'boolean',
-        default: PREFS.media.enableMediaDisplayButton,
+        default: DEFAULT_PREFS.media.enableMediaDisplayButton,
       },
       hideMediaLogo: {
         type: 'boolean',
-        default: PREFS.media.hideMediaLogo,
+        default: DEFAULT_PREFS.media.hideMediaLogo,
       },
       hideWinAfterMedia: {
         type: 'boolean',
-        default: PREFS.media.hideWinAfterMedia,
+        default: DEFAULT_PREFS.media.hideWinAfterMedia,
       },
       autoPlayFirst: {
         type: 'boolean',
-        default: PREFS.media.autoPlayFirst,
+        default: DEFAULT_PREFS.media.autoPlayFirst,
       },
       autoPlayFirstTime: {
         type: 'number',
-        default: PREFS.media.autoPlayFirstTime,
+        default: DEFAULT_PREFS.media.autoPlayFirstTime,
         minimum: 1,
         maximum: 15,
       },
       includePrinted: {
         type: 'boolean',
-        default: PREFS.media.includePrinted,
+        default: DEFAULT_PREFS.media.includePrinted,
       },
       excludeTh: {
         type: 'boolean',
-        default: PREFS.media.excludeTh,
+        default: DEFAULT_PREFS.media.excludeTh,
       },
       excludeFootnotes: {
         type: 'boolean',
-        default: PREFS.media.excludeFootnotes,
+        default: DEFAULT_PREFS.media.excludeFootnotes,
       },
       excludeLffImages: {
         type: 'boolean',
-        default: PREFS.media.excludeLffImages,
+        default: DEFAULT_PREFS.media.excludeLffImages,
       },
       ppBackward: {
         type: ['string', 'null'],
-        default: PREFS.media.ppBackward,
+        default: DEFAULT_PREFS.media.ppBackward,
       },
       ppForward: {
         type: ['string', 'null'],
-        default: PREFS.media.ppForward,
+        default: DEFAULT_PREFS.media.ppForward,
       },
       preferredOutput: {
         oneOf: [{ type: 'string' }, { type: 'number' }],
-        default: PREFS.media.preferredOutput,
+        default: DEFAULT_PREFS.media.preferredOutput,
       },
       mediaWinShortcut: {
         type: 'string',
-        default: PREFS.media.mediaWinShortcut,
+        default: DEFAULT_PREFS.media.mediaWinShortcut,
       },
       presentShortcut: {
         type: 'string',
-        default: PREFS.media.presentShortcut,
+        default: DEFAULT_PREFS.media.presentShortcut,
       },
     },
   },
@@ -306,65 +293,65 @@ const schema: Schema<PrefStore> = {
     properties: {
       autoStartMusic: {
         type: 'boolean',
-        default: PREFS.meeting.autoStartMusic,
+        default: DEFAULT_PREFS.meeting.autoStartMusic,
       },
       enableMusicButton: {
         type: 'boolean',
-        default: PREFS.meeting.enableMusicButton,
+        default: DEFAULT_PREFS.meeting.enableMusicButton,
       },
       shuffleShortcut: {
         type: 'string',
-        default: PREFS.meeting.shuffleShortcut,
+        default: DEFAULT_PREFS.meeting.shuffleShortcut,
       },
       enableMusicFadeOut: {
         type: 'boolean',
-        default: PREFS.meeting.enableMusicFadeOut,
+        default: DEFAULT_PREFS.meeting.enableMusicFadeOut,
       },
       mwDay: {
         type: ['number', 'null'],
         minimum: 0,
         maximum: 6,
-        default: PREFS.meeting.mwDay,
+        default: DEFAULT_PREFS.meeting.mwDay,
       },
       specialCong: {
         type: 'boolean',
-        default: PREFS.meeting.specialCong,
+        default: DEFAULT_PREFS.meeting.specialCong,
       },
       coWeek: {
         type: ['string', 'null'],
-        default: PREFS.meeting.coWeek,
+        default: DEFAULT_PREFS.meeting.coWeek,
       },
       weDay: {
         type: ['number', 'null'],
         minimum: 0,
         maximum: 6,
-        default: PREFS.meeting.weDay,
+        default: DEFAULT_PREFS.meeting.weDay,
       },
       musicFadeOutType: {
         type: 'string',
-        enum: ENUMS.musicFadeOutType,
-        default: PREFS.meeting.musicFadeOutType,
+        enum: PREF_ENUMS.musicFadeOutType,
+        default: DEFAULT_PREFS.meeting.musicFadeOutType,
       },
       musicFadeOutTime: {
         type: 'number',
         minimum: 5,
         maximum: 60,
         multipleOf: 5,
-        default: PREFS.meeting.musicFadeOutTime,
+        default: DEFAULT_PREFS.meeting.musicFadeOutTime,
       },
       musicVolume: {
         type: 'number',
         minimum: 1,
         maximum: 100,
-        default: PREFS.meeting.musicVolume,
+        default: DEFAULT_PREFS.meeting.musicVolume,
       },
       mwStartTime: {
         type: ['string', 'null'],
-        default: PREFS.meeting.mwStartTime,
+        default: DEFAULT_PREFS.meeting.mwStartTime,
       },
       weStartTime: {
         type: ['string', 'null'],
-        default: PREFS.meeting.weStartTime,
+        default: DEFAULT_PREFS.meeting.weStartTime,
       },
     },
   },
@@ -376,7 +363,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
   return {
     name,
     schema,
-    defaults: PREFS,
+    defaults: DEFAULT_PREFS,
     beforeEachMigration: (_store, context) => {
       log.debug(
         `[main-config] migrate from ${context.fromVersion} → ${context.toVersion}`,
@@ -391,7 +378,6 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
           if (
             key === 'app' ||
             key === 'cong' ||
-            key === 'cloud' ||
             key === 'media' ||
             key === 'meeting' ||
             key === '__internal__'
@@ -497,26 +483,26 @@ export function migrate2290(key: string, newVal: any) {
       .replace('serverPort', 'port')
       .replace('serverUser', 'user') as keyof CongPrefs
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  } else if (PREFS.media[key as keyof MediaPrefs] !== undefined) {
+  } else if (DEFAULT_PREFS.media[key as keyof MediaPrefs] !== undefined) {
     root = 'media'
     isMediaPref = true
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  } else if (PREFS.meeting[key as keyof MeetingPrefs] !== undefined) {
+  } else if (DEFAULT_PREFS.meeting[key as keyof MeetingPrefs] !== undefined) {
     root = 'meeting'
     isMeetingPref = true
   }
 
   function setDefaultValue() {
     if (isObsPref) {
-      newVal = PREFS.app.obs[newKey as keyof ObsPrefs]
+      newVal = DEFAULT_PREFS.app.obs[newKey as keyof ObsPrefs]
     } else if (isMeetingPref) {
-      newVal = PREFS.meeting[newKey as keyof MeetingPrefs]
+      newVal = DEFAULT_PREFS.meeting[newKey as keyof MeetingPrefs]
     } else if (isMediaPref) {
-      newVal = PREFS.media[newKey as keyof MediaPrefs]
+      newVal = DEFAULT_PREFS.media[newKey as keyof MediaPrefs]
     } else if (isCongPref) {
-      newVal = PREFS.cong[newKey as keyof CongPrefs]
+      newVal = DEFAULT_PREFS.cong[newKey as keyof CongPrefs]
     } else {
-      newVal = PREFS.app[newKey as keyof AppPrefs]
+      newVal = DEFAULT_PREFS.app[newKey as keyof AppPrefs]
     }
   }
 
@@ -533,11 +519,10 @@ export function migrate2290(key: string, newVal: any) {
   }
 
   // Validate enums
-  const match = ENUMS[key as keyof typeof ENUMS]
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (match && !match.includes(newVal)) {
-    setDefaultValue()
-  }
+  const match = PREF_ENUMS[key as keyof typeof PREF_ENUMS] as
+    | string[]
+    | undefined
+  if (match && !match.includes(newVal)) setDefaultValue()
 
   // Values that were converted from number to string
   if (key === 'congServerPort') {
@@ -652,7 +637,7 @@ export function getPrefs<T = unknown>(key: string) {
 }
 
 export function getAllPrefs() {
-  return store ? (readJsonSync(store.path) as PrefStore) : PREFS
+  return store ? (readJsonSync(store.path) as PrefStore) : DEFAULT_PREFS
 }
 
 export function setAllPrefs(prefs: PrefStore) {

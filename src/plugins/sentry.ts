@@ -3,9 +3,8 @@ import {
   init,
   setContext,
   captureException,
-  vueRouterInstrumentation,
   setUser,
-  BrowserTracing,
+  browserTracingIntegration,
 } from '@sentry/vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -22,11 +21,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       enabled: sentryEnabled,
       environment: isDev ? 'development' : 'production',
       tracesSampleRate: isDev ? 1 : 0.1,
-      integrations: [
-        new BrowserTracing({
-          routingInstrumentation: vueRouterInstrumentation(router),
-        }),
-      ],
+      integrations: [browserTracingIntegration({ router })],
     })
   }
 

@@ -30,10 +30,6 @@
     "outputFolderDateFormat": "YYYY-MM-DD",
     "theme": "system"
   },
-  "cloudSync": {
-    "enable": false,
-    "path": null
-  },
   "cong": {
     "server": null,
     "port": null,

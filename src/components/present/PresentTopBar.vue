@@ -7,7 +7,7 @@
         @click="clearDate()"
       />
     </template>
-    <v-app-bar-title>{{ $dayjs(date).format('LL - dddd') }}</v-app-bar-title>
+    <v-app-bar-title>{{ date }}</v-app-bar-title>
     <v-spacer />
 
     <v-btn
@@ -48,16 +48,7 @@
         <v-icon icon="i-mdi:skip-forward" />
       </v-btn>
     </template>
-    <v-progress-circular
-      v-if="
-        globalDownloadProgress.percent > 0 &&
-        globalDownloadProgress.percent < 100
-      "
-      indeterminate
-      color="primary"
-      class="mx-3"
-    />
-    <v-menu v-else location="bottom">
+    <v-menu location="bottom">
       <template #activator="{ props }">
         <v-btn
           icon="i-mdi:dots-vertical"
@@ -70,7 +61,6 @@
         <template v-for="(action, i) in actions" :key="i">
           <v-divider v-if="action.divider" />
           <v-list-item
-            v-if="action.title !== $t('resetSort') || customSort"
             :disabled="action.disabled ? mediaActive : false"
             @click="action.action()"
           >
@@ -92,12 +82,10 @@
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
-import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 
 defineProps<{
   mediaCount: number
   currentIndex: number
-  customSort: boolean
 }>()
 const emit = defineEmits<{
   (e: 'cc'): void
@@ -106,28 +94,12 @@ const emit = defineEmits<{
   (e: 'manageMedia'): void
   (e: 'resetSort'): void
 }>()
-const { $dayjs } = useNuxtApp()
-$dayjs.extend(LocalizedFormat)
-
 const { t } = useI18n()
 const mediaActive = inject(mediaActiveKey, ref(false))
 const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
 const date = useRouteQuery<string>('date', '')
 const { navDisabled } = storeToRefs(useStatStore())
-const globalDownloadProgress = computed(() => {
-  const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
-        ([, d]) => d.current !== d.total
-      ) */
-  const current = progressArray.reduce((acc, [, value]) => {
-    return acc + value.current
-  }, 0)
-  const total = progressArray.reduce((acc, [, value]) => {
-    return acc + value.total
-  }, 0)
-  const percent = (current / total) * 100 || 0
-  return { current, total, percent }
-})
 
 // Subtitles
 const ccAvailable = ref(false)
@@ -177,14 +149,6 @@ const openWebsite = () => {
     `https://www.jw.org/${getPrefs<string>('app.localAppLang')}/`,
   )
 }
-const resetSort = () => {
-  try {
-    rm(join(mediaPath(), date.value, 'file-order.json'))
-    emit('resetSort')
-  } catch (error) {
-    log.error('Error resetting sort', error)
-  }
-}
 
 // More actions
 const actions = [
@@ -196,22 +160,10 @@ const actions = [
     },
   },
   {
-    title: t('resetSort'),
-    icon: 'i-mdi:sort-alphabetical-variant',
-    divider: true,
-    action: resetSort,
-  },
-  // toggleQuickSong
-  {
     title: t('openFolder'),
     icon: 'i-mdi:folder-open',
     action: openFolder,
   },
-  // {
-  //   title: t('showPrefix'),
-  //   icon: 'i-mdi:numeric',
-  //   action: () => emit('showPrefix'),
-  // },
   {
     title: t('openJWorg') + ' [BETA]',
     icon: 'i-mdi:web',

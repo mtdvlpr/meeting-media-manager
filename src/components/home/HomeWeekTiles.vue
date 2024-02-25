@@ -6,7 +6,7 @@
       class="text-center flex-shrink-1 px-1 pb-0"
     >
       <v-card
-        :color="dayColors[i]"
+        :color="days[i]"
         class="fill-height d-flex justify-center flex-column"
         @click="openDate(day.formatted)"
       >
@@ -19,7 +19,7 @@
     <v-col class="pb-0 px-1">
       <v-card
         class="fill-height d-flex align-center"
-        :color="recurringColor"
+        :color="recurring"
         @click="openDate('Recurring')"
       >
         <v-card-text class="text-center py-2">
@@ -35,8 +35,8 @@ import type { DateFormat } from '~~/types'
 
 const props = defineProps<{
   baseDate: Dayjs
-  recurringColor: string
-  dayColors: Record<number, string>
+  recurring: string
+  days: Record<number, string>
 }>()
 
 // Open manage page for specific day

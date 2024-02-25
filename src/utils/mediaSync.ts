@@ -17,7 +17,7 @@ export function syncLocalRecurringMedia(baseDate: Dayjs) {
 
   const dates = [...meetings.keys()].filter((date) => {
     if (date === 'Recurring') return false
-    const day = useNuxtApp().$dayjs(
+    const day = useDayjs()(
       date,
       getPrefs<DateFormat>('app.outputFolderDateFormat'),
     )
@@ -45,13 +45,13 @@ export function syncLocalRecurringMedia(baseDate: Dayjs) {
 export function createMediaNamesByDate(date: string) {
   const statStore = useStatStore()
   const mediaStore = useMediaStore()
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   statStore.startPerf({
     func: 'createMediaNamesByDate',
     start: performance.now(),
   })
 
-  const day = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+  const day = dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const isWeDay = isMeetingDay(day) === 'we'
   let heading = '01'
   let i = 1
@@ -77,7 +77,7 @@ export function createMediaNamesByDate(date: string) {
           if (item.queryInfo?.TargetParagraphNumberLabel) {
             item.safeName +=
               ' ' +
-              (item.queryInfo.TargetParagraphNumberLabel === 9999
+              (item.queryInfo.TargetParagraphNumberLabel === FOOTNOTE_PAR_NR
                 ? translate('footnote')
                 : translate('paragraph') +
                   ' ' +
@@ -109,7 +109,7 @@ export function createMediaNamesByDate(date: string) {
 export function createMediaNames() {
   const statStore = useStatStore()
   const mediaStore = useMediaStore()
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   statStore.startPerf({
     func: 'createMediaNames',
     start: performance.now(),
@@ -118,7 +118,7 @@ export function createMediaNames() {
 
   meetings.forEach((parts, date) => {
     let i = 1
-    const day = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+    const day = dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
     const isWeDay = isMeetingDay(day) === 'we'
     const sorted = [...parts.entries()].sort((a, b) => a[0] - b[0])
 
@@ -173,11 +173,9 @@ export function createMediaNames() {
 export async function downloadIfRequired({
   file,
   date,
-  additional,
 }: {
   file: VideoFile
   date?: string
-  additional?: boolean
 }): Promise<string> {
   const progressMap = useMediaStore().progress
   const downloadInProgress = progressMap.get(file.url)
@@ -200,16 +198,7 @@ export async function downloadIfRequired({
       if (extname(file.cacheFile) === '.jwpub') {
         await emptyDir(file.cacheDir)
       }
-      const filePath = file.folder
-        ? additional
-          ? join(
-              (getPrefs('cloud.path'),
-              'Additional',
-              file.folder!,
-              file.destFilename ?? file.safeName),
-            )
-          : mediaPath(file)
-        : undefined
+      const filePath = file.folder ? mediaPath(file) : undefined
       const destinations = [file.cacheFile]
       if (filePath) destinations.push(filePath)
       await fetchFile({ url: file.url, dest: destinations, date })
@@ -241,14 +230,7 @@ export async function downloadIfRequired({
     }
   } else {
     if (file.folder) {
-      const filePath = additional
-        ? join(
-            getPrefs('cloud.path'),
-            'Additional',
-            file.folder!,
-            file.destFilename ?? file.safeName,
-          )
-        : mediaPath(file)
+      const filePath = mediaPath(file)
       if (filePath) {
         copy(file.cacheFile, filePath)
         if (subtitlesEnabled && subsLang && file.subtitles) {
@@ -320,14 +302,14 @@ export async function syncJWMediaByDate(
 export async function syncJWMedia(
   dryrun: boolean,
   baseDate: Dayjs,
-  setProgress: (loaded: number, total: number, global?: boolean) => void,
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ) {
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   const meetings = new Map(
     Array.from(useMediaStore().meetings)
       .filter(([date]) => {
         if (date === 'Recurring') return false
-        const dateObj = $dayjs(
+        const dateObj = dayjs(
           date,
           getPrefs<DateFormat>('app.outputFolderDateFormat'),
         )
@@ -373,53 +355,41 @@ export async function syncJWMedia(
 
 async function syncMediaItemByDate(date: string, item: MeetingFile) {
   if (item.filesize && (item.url || item.filepath)) {
-    if (
-      getPrefs('cloud.enable') &&
-      (await pathExists(
-        join(getPrefs('cloud.path'), 'Hidden', item.folder, item.safeName),
-      ))
-    ) {
-      log.info(
-        `%c[HIDDEN] [${date}] ${item.safeName}`,
-        'background-color: #aae5aa; color: #004085;',
-      )
-    } else {
-      log.info(
-        `%c[jwOrg] [${date}] ${item.safeName}`,
-        'background-color: #cce5ff; color: #004085;',
-      )
-      // Set markers for sign language videos
-      const path = mediaPath()
-      if (item.markers && path && item.folder && item.safeName) {
-        const markers = Array.from(
-          new Set(
-            item.markers.markers.map(
-              ({ duration, label, startTime, endTransitionDuration }) =>
-                JSON.stringify({
-                  duration,
-                  label,
-                  startTime,
-                  endTransitionDuration,
-                }),
-            ),
+    log.info(
+      `%c[jwOrg] [${date}] ${item.safeName}`,
+      'background-color: #cce5ff; color: #004085;',
+    )
+    // Set markers for sign language videos
+    const path = mediaPath()
+    if (item.markers && path && item.folder && item.safeName) {
+      const markers = Array.from(
+        new Set(
+          item.markers.markers.map(
+            ({ duration, label, startTime, endTransitionDuration }) =>
+              JSON.stringify({
+                duration,
+                label,
+                startTime,
+                endTransitionDuration,
+              }),
           ),
-        ).map((m) => JSON.parse(m))
-        try {
-          writeJson(
-            join(path, item.folder, changeExt(item.safeName, 'json')),
-            markers,
-          )
-        } catch (error) {
-          log.error(error)
-        }
+        ),
+      ).map((m) => JSON.parse(m))
+      try {
+        writeJson(
+          join(path, item.folder, changeExt(item.safeName, 'json')),
+          markers,
+        )
+      } catch (error) {
+        log.error(error)
       }
-      if (item.url) {
-        const newItem = JSON.parse(JSON.stringify(item))
-        await downloadIfRequired({ file: newItem, date })
-      } else if (path && item.filepath && item.folder && item.safeName) {
-        const dest = join(path, item.folder, item.safeName)
-        await copy(item.filepath, dest)
-      }
+    }
+    if (item.url) {
+      const newItem = JSON.parse(JSON.stringify(item))
+      await downloadIfRequired({ file: newItem, date })
+    } else if (path && item.filepath && item.folder && item.safeName) {
+      const dest = join(path, item.folder, item.safeName)
+      await copy(item.filepath, dest)
     }
   } else {
     warn(
@@ -442,7 +412,7 @@ async function syncMediaItemByDate(date: string, item: MeetingFile) {
 async function syncMediaItem(
   date: string,
   item: MeetingFile,
-  setProgress: (loaded: number, total: number, global?: boolean) => void,
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ): Promise<void> {
   if (item.filesize && (item.url || item.filepath)) {
     log.info(
@@ -527,7 +497,7 @@ async function syncMediaItem(
       item,
     )
   }
-  increaseProgress(setProgress)
+  if (setProgress) increaseProgress(setProgress)
 }
 
 export function addMediaItemToPart(

@@ -63,8 +63,8 @@ export async function connect(
 
     await Promise.allSettled(promises)
 
-    store.setContents(contents)
-    store.setClient(client)
+    store.contents = contents
+    store.client = client
 
     if (UNSUPPORTED.find((h) => host.includes(h))) {
       warn(`errorWebdavNotSupported`, { identifier: host })
@@ -72,7 +72,7 @@ export async function connect(
 
     return 'success'
   } catch (e: any) {
-    store.clear()
+    store.$reset()
     log.debug('error:', e.message)
 
     // Return error message
@@ -122,7 +122,7 @@ export async function updateContent() {
       dir,
     )
   }
-  store.setContents(contents)
+  store.contents = contents
 }
 
 export async function createCongDir(dir: string) {
@@ -199,7 +199,7 @@ export function updateContentsTree() {
     .forEach((dir) => {
       tree.push(dir)
     })
-  store.setContentsTree(tree)
+  store.contentsTree = tree
   return tree
 }
 
@@ -320,12 +320,12 @@ async function removeOldDate(
   client: WebDAVClient,
   dir: FileStat,
 ): Promise<void> {
-  const { $dayjs } = useNuxtApp()
-  const date = $dayjs(
+  const dayjs = useDayjs()
+  const date = dayjs(
     dir.basename,
     getPrefs<DateFormat>('app.outputFolderDateFormat'),
   )
-  if (date.isValid() && date.isBefore($dayjs().subtract(1, 'day'))) {
+  if (date.isValid() && date.isBefore(dayjs().subtract(1, 'day'))) {
     try {
       await client.deleteFile(dir.filename)
     } catch (e: any) {

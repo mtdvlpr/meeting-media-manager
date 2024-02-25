@@ -1,5 +1,10 @@
 import { platform } from 'os'
-import { expect, test, ElectronApplication, Page } from '@playwright/test'
+import {
+  expect,
+  test,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
@@ -42,7 +47,8 @@ test('add song', async () => {
   await page.locator('button', { hasText: locale.song }).click()
 
   // Wait for songs to be loaded
-  await delay(1500)
+  const SONGS_LOAD_TIME = 1500
+  await delay(SONGS_LOAD_TIME)
 
   // Click song dropdown
   await page.locator('.v-autocomplete').click()
@@ -78,6 +84,7 @@ test('add song', async () => {
   await page.locator('svg.fa-floppy-disk').click()
 
   // Wait for home button to appear
+  // eslint-disable-next-line playwright/no-wait-for-selector
   await page.waitForSelector('svg.fa-house')
 
   // Expect song to be present in media list

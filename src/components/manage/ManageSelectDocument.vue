@@ -1,20 +1,13 @@
 <template>
   <v-card>
-    <!-- <v-card-title style="word-break: break-word" class="justify-center">
+    <v-card-title style="word-break: break-word" class="justify-center">
       {{
         !loading && missingMedia.length > 0
           ? $t('selectExternalMedia')
           : $t('selectDocument')
       }}
-    </v-card-title> -->
+    </v-card-title>
     <v-card-text>
-      <div>
-        {{
-          !loading && missingMedia.length > 0
-            ? $t('selectExternalMedia')
-            : $t('selectDocument')
-        }}
-      </div>
       <loading-icon v-if="loading" />
       <v-list v-else-if="missingMedia.length > 0">
         <template v-for="item in missingMedia" :key="item">
@@ -34,7 +27,8 @@
       </v-list>
     </v-card-text>
     <v-card-actions v-if="!loading">
-      <v-btn @click="emit('empty')">Cancel</v-btn>
+      <v-spacer />
+      <v-btn color="error" @click="emit('empty')">Cancel</v-btn>
       <v-spacer />
       <v-btn
         v-if="missingMedia.length > 0"

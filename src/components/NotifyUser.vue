@@ -36,8 +36,9 @@
     <p class="pa-2" v-html="$t(m.message)" />
     <code v-if="m.identifier">{{ m.identifier }}</code>
     <v-divider v-if="m.action" class="mt-2" />
-    <template v-if="m.action" #actions>
+    <template v-if="m.action || m.message === 'updateDownloaded'" #actions>
       <v-btn
+        v-if="m.action"
         size="small"
         color="primary"
         variant="elevated"
@@ -45,9 +46,13 @@
       >
         {{ $t(m.action!.label) }}
       </v-btn>
-    </template>
-    <template v-else-if="m.message === 'updateDownloaded'" #actions>
-      <v-btn size="small" color="primary" variant="elevated" @click="install">
+      <v-btn
+        v-else
+        size="small"
+        color="primary"
+        variant="elevated"
+        @click="installNow"
+      >
         {{ $t('installNow') }}
       </v-btn>
     </template>
@@ -60,7 +65,7 @@ import type { NotifyAction } from '~~/types'
 const store = useNotifyStore()
 const { notifications } = storeToRefs(store)
 
-const install = () => {
+const installNow = () => {
   ipcRenderer.send('installNow')
 }
 

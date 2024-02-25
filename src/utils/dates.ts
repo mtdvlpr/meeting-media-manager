@@ -1,12 +1,12 @@
 import type { Dayjs } from 'dayjs'
-import { DateFormat } from '../../types'
+import type { DateFormat } from '~~/types'
 
 export function getNow() {
-  return useNuxtApp().$dayjs().hour(0).minute(0).second(0).millisecond(0)
+  return useDayjs()().hour(0).minute(0).second(0).millisecond(0)
 }
 export function isMeetingDay(date?: Dayjs) {
-  const { $dayjs } = useNuxtApp()
-  const dateToCheck = date ?? $dayjs()
+  const dayjs = useDayjs()
+  const dateToCheck = date ?? dayjs()
   if (!dateToCheck.isValid() || getPrefs<boolean>('meeting.specialCong'))
     return ''
   const mwDay = getMwDay(dateToCheck.startOf('week'))
@@ -18,11 +18,11 @@ export function isMeetingDay(date?: Dayjs) {
 }
 
 export function isCoWeek(baseDate?: Dayjs) {
-  const { $dayjs } = useNuxtApp()
-  if (!baseDate) baseDate = $dayjs()
+  const dayjs = useDayjs()
+  if (!baseDate) baseDate = dayjs()
   baseDate = baseDate.startOf('week')
   const coWeek = getPrefs<string>('meeting.coWeek')
-  const coWeekAsDayJs = $dayjs(
+  const coWeekAsDayJs = dayjs(
     coWeek,
     getPrefs<DateFormat>('app.outputFolderDateFormat'),
   )

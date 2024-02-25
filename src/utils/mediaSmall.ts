@@ -1,4 +1,9 @@
-import type { SmallMediaFile, MediaFile, Publication, Res } from '~~/types'
+import type {
+  SmallMediaFile,
+  MediaFile,
+  Publication,
+  Resolution,
+} from '~~/types'
 
 export async function getMediaLinks(
   mediaItem: {
@@ -238,7 +243,9 @@ export async function getSmallMediaFiles(
 
       // Filter on max resolution
       mediaFiles = mediaFiles.filter((file) => {
-        return parseRes(file.label) <= parseRes(getPrefs<Res>('media.maxRes'))
+        return (
+          parseRes(file.label) <= parseRes(getPrefs<Resolution>('media.maxRes'))
+        )
       })
 
       const mappedFiles = new Map(mediaFiles.map((file) => [file.title, file]))

@@ -183,6 +183,7 @@ const loadMedia = (media: Media) => {
             video.classList.contains('shortVideoPaused')
           )
         ) {
+          log.debug('video pause')
           await hideMedia()
           ipcRenderer.send('videoEnd')
         } else {
@@ -190,6 +191,8 @@ const loadMedia = (media: Media) => {
         }
       }
       video.onended = () => {
+        log.debug('video end')
+        if (video.classList.contains('shortVideoPaused')) return
         if (interval.value) {
           clearInterval(interval.value)
         }

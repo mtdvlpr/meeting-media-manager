@@ -18,7 +18,7 @@ import {
 import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
 import { ipcRenderer } from 'electron'
-import type { LocaleObject } from '#i18n'
+import type { LocaleObject } from '@nuxtjs/i18n'
 import type { DateFormat, PrefStore } from '~~/types'
 
 export function findOne(path: string | string[], options?: Options) {
@@ -157,8 +157,8 @@ export function rename(
       case 'rename':
         if (type === 'date') {
           // Convert date folder to new format
-          const { $dayjs } = useNuxtApp()
-          const date = $dayjs(file, oldName)
+          const dayjs = useDayjs()
+          const date = dayjs(file, oldName)
           if (!date.isValid()) return
           renameSync(path, join(dir, date.format(newName)))
         } else if (file === oldName) {
@@ -204,11 +204,7 @@ export async function renamePubs(
   for (let i = 0; i < dirs.length; i++) {
     const dir = dirs[i]
     const path = join(mPath, dir)
-    const date = useNuxtApp().$dayjs(
-      dir,
-      dateFormat,
-      oldLocale.dayjs ?? oldLocale.code,
-    )
+    const date = useDayjs()(dir, dateFormat, oldLocale.dayjs ?? oldLocale.code)
 
     if (date.isValid() && (await stat(path)).isDirectory()) {
       const files = await readdir(path)
@@ -244,7 +240,7 @@ export async function renamePubs(
   }
 }
 
-export async function cleanup() {
+export async function cleanup(cong?: string) {
   let lastVersion = '0'
   const versionPath = join(appPath(), 'lastRunVersion.json')
   const appDataPath = await ipcRenderer.invoke('appData')
@@ -304,7 +300,6 @@ export async function cleanup() {
   }
 
   // Cleanup old pref files
-  const cong = useRoute().query.cong
   if (cong) {
     const prefFiles = findAll(join(appPath(), 'prefs-*.json'), {
       ignore: [join(appPath(), `prefs-${cong}.json`)],

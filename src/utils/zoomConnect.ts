@@ -1,4 +1,4 @@
-import type { ParticipantPropertiesPayload } from '@zoomus/websdk/embedded'
+import type { ParticipantPropertiesPayload } from '@zoom/meetingsdk/embedded'
 import type { ZoomPrefs } from '~~/types'
 
 export const zoomSocket = () => {
@@ -54,7 +54,7 @@ export async function connectZoom() {
       })
     store.client.on('user-updated', setUserProps)
     store.client.on('user-added', onUserAdded)
-    store.setConnected(true)
+    store.connected = true
     setUserProps()
   } catch (e: unknown) {
     log.debug('caught Zoom error')
@@ -101,10 +101,10 @@ const setUserProps = () => {
   } else if (!userIsHost) {
     const host = participants.find((user) => user.isHost)
     log.debug('host', host)
-    if (host) store.setHostID(host.userId)
+    if (host) store.hostID = host.userId
   }
-  store.setParticipants(participants)
+  store.participants = participants
   const user = store.client.getCurrentUser()
-  if (user) store.setUserID(user.userId)
-  store.setCoHost(userIsHost || store.client.isCoHost())
+  if (user) store.userID = user.userId
+  store.coHost = userIsHost || store.client.isCoHost()
 }

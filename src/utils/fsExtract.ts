@@ -46,8 +46,8 @@ export async function extractAllTo(zip: string, dest: string, date?: string) {
           join(dest, filename),
           await fileObject.async('nodebuffer'),
         )
-        // @ts-expect-error
-        current = current + fileObject._data.uncompressedSize
+        // @ts-expect-error: property _data does not exist on type 'JSZipObject'
+        current += fileObject._data.uncompressedSize
         store.setDownloadProgress({
           key: dest,
           downloadProgress: {

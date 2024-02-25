@@ -1,5 +1,4 @@
-import { ShortcutAction } from './electron.d'
-import { Display, Point } from 'electron'
+import type { Display, Point } from 'electron'
 
 export interface Screen extends Display {
   humanFriendlyNumber: number

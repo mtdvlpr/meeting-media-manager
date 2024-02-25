@@ -1,21 +1,17 @@
 <template>
   <v-btn
-    :id="variant"
     ref="btn"
     v-click-outside="() => (clickedOnce = false)"
     icon
     :aria-label="variant"
     v-bind="{ ...style.props, ...$attrs }"
     :color="clickedOnce ? 'error' : style.props.color"
+    :to="link"
     :class="{
       ...style.props.class,
     }"
-    :to="link"
     @click.stop="atClick()"
   >
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
-    </template>
     <v-tooltip
       v-if="clickedOnce"
       activator="parent"
@@ -34,18 +30,20 @@
 </template>
 <script setup lang="ts">
 type Variant = 'home' | 'cancel' | 'play' | 'stop'
+
+defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
     variant: Variant
-    clickTwice?: boolean
     tooltip?: 'top' | 'bottom' | 'start' | 'end'
     iconColor?: string
+    clickTwice?: boolean
     toggled?: boolean
     video?: boolean
   }>(),
   {
-    iconColor: '',
     tooltip: 'end',
+    iconColor: undefined,
   },
 )
 
@@ -71,7 +69,7 @@ const getIcon = (
 
 // Icon link
 const localePath = useLocalePath()
-const weekNr = useNumberQuery('week', useNuxtApp().$dayjs().isoWeek())
+const weekNr = useNumberQuery('week', useDayjs()().isoWeek())
 const link = computed(() => {
   if (style.value.to) {
     return {

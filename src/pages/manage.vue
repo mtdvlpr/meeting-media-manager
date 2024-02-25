@@ -34,7 +34,7 @@ onBeforeUnmount(() => {
 })
 const loadMedia = async () => {
   loading.value = true
-  useStatStore().setNavDisabled(true)
+  useStatStore().navDisabled = true
   if (online.value) {
     await getMeetingData()
   } else {
@@ -42,7 +42,7 @@ const loadMedia = async () => {
   }
   getExistingMedia()
   loading.value = false
-  useStatStore().setNavDisabled(false)
+  useStatStore().navDisabled = false
 }
 onMounted(() => {
   loadMedia()

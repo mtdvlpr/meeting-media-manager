@@ -25,6 +25,7 @@ function logger(type: keyof Logs, args: [msg: any, ...args: any[]]): void {
       ? args[0]
       : args[0]?.message ?? args[0]?.description,
   )
+  // eslint-disable-next-line no-console
   console[type](...args)
 }
 
@@ -35,16 +36,16 @@ const IGNORED_ERRORS = [
 ]
 
 export const log = {
-  debug: function (msg: any, ...args: any[]) {
+  debug(msg: any, ...args: any[]) {
     logger('debug', [msg, ...args])
   },
-  info: function (msg: any, ...args: any[]) {
+  info(msg: any, ...args: any[]) {
     logger('info', [msg, ...args])
   },
-  warn: function (msg: any, ...args: any[]) {
+  warn(msg: any, ...args: any[]) {
     logger('warn', [msg, ...args])
   },
-  error: function (msg: any, ...args: any[]) {
+  error(msg: any, ...args: any[]) {
     logger('error', [msg, ...args])
     if (typeof msg !== 'string' && !IGNORED_ERRORS.includes(msg.message)) {
       useNuxtApp().$sentry.captureException(msg)

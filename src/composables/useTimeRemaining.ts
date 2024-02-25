@@ -2,7 +2,7 @@ import type { Dayjs } from 'dayjs'
 import type { Duration } from 'dayjs/plugin/duration'
 
 export default function (stop: Dayjs | number, onStop: () => void) {
-  const { $dayjs } = useNuxtApp()
+  const dayjs = useDayjs()
   let interval: NodeJS.Timeout | null = null
   let initialSeconds = 0
 
@@ -17,7 +17,7 @@ export default function (stop: Dayjs | number, onStop: () => void) {
   if (typeof stop === 'number') {
     initialSeconds = SEC_IN_MIN * stop
   } else {
-    initialSeconds = stop.diff($dayjs(), 's')
+    initialSeconds = stop.diff(dayjs(), 's')
     if (initialSeconds <= 0) {
       stopInterval()
     }
@@ -32,7 +32,7 @@ export default function (stop: Dayjs | number, onStop: () => void) {
   }
 
   const ms = ref(initialSeconds * MS_IN_SEC)
-  const duration = computed(() => $dayjs.duration(ms.value, 'ms'))
+  const duration = computed(() => dayjs.duration(ms.value, 'ms'))
   const formatted = computed(() => formatDuration(duration.value))
   interval = setInterval(() => {
     ms.value -= MS_IN_SEC

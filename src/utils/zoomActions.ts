@@ -3,9 +3,7 @@ export async function startMeeting(socket: WebSocket | null) {
   if (!store.coHost || !store.client) {
     warn('errorNotCoHost')
     if (!store.client) return
-  } else {
-    store.setStarted(true)
-  }
+  } else store.started = true
 
   const hostID = store.hostID
 
@@ -23,9 +21,7 @@ export function stopMeeting(socket: WebSocket | null) {
   const store = useZoomStore()
   if (!store.coHost) {
     warn('errorNotCoHost')
-  } else {
-    store.setStarted(false)
-  }
+  } else store.started = false
 
   toggleSpotlight(socket, false)
   toggleAllowUnmute(socket, true)
@@ -221,7 +217,7 @@ function sendToWebSocket(
       return
     }
   }
-  if (socket) store.setWebsocket(socket)
+  if (socket) store.websocket = socket
   if (store.client) {
     msg.seq = store.sequence
     if (withUser) {

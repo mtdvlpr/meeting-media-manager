@@ -2,7 +2,7 @@
   "autoOpenFolderWhenDone": null,
   "autoQuitWhenDone": null,
   "autoRunAtBoot": null,
-  // "autoStartSync": null,
+  "autoStartSync": null,
   "congServer": null,
   "congServerDir": null,
   "congServerPass": null,

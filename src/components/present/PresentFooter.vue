@@ -39,21 +39,18 @@
           </v-btn>
         </template>
       </v-btn-toggle>
-      <form-input
+      <v-select
         v-else
         id="input-select-obs-scene"
         v-model="scene"
-        field="select"
-        width=""
         :items="scenes"
-        hide-details="auto"
       />
     </v-col>
   </v-footer>
 </template>
 <script setup lang="ts">
 import { useIpcRendererOn } from '@vueuse/electron'
-import type { Participant } from '@zoomus/websdk/embedded'
+import type { Participant } from '@zoom/meetingsdk/embedded'
 import type { ObsPrefs } from '~~/types'
 
 defineProps<{
@@ -90,7 +87,7 @@ const scene = computed({
   get: () => currentScene.value,
   set: (val) => {
     if (val && mediaActive.value) {
-      obsStore.setCurrentScene(val)
+      obsStore.currentScene = val
     } else if (val) {
       setScene(val)
     }
@@ -164,10 +161,13 @@ const availableWidth = computed(() => {
     SIDE_NAV + FOOTER_PADDING + BUTTONS + OBS_MENU_PADDING
   return windowSize.width.value - WIDTH_OF_OTHER_ELEMENTS
 })
+
 const getSceneWidth = (sceneLength: number) => {
-  if (sceneLength <= 3) return 64
-  return 64 + (sceneLength - 3) * 6
+  const BASE_WIDTH = 64
+  if (sceneLength <= 3) return BASE_WIDTH
+  return BASE_WIDTH + (sceneLength - 3) * 6
 }
+
 const shortScenesLength = computed(() => {
   let combinedLength = 0
   for (const scene of scenes.value) {
@@ -175,6 +175,7 @@ const shortScenesLength = computed(() => {
   }
   return combinedLength
 })
+
 const combinedScenesLength = computed(() => {
   let combinedLength = 0
   for (const scene of scenes.value) {

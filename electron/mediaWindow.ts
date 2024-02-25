@@ -49,7 +49,7 @@ export function initMediaWinListeners() {
       mediaWin?.webContents.send('showMedia', media)
       getMainWindow().webContents.send('showingMedia', [
         !!media,
-        !!media?.start,
+        !!media?.start && !media?.end?.startsWith('00:00:00'),
       ])
     },
   )

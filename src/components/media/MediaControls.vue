@@ -12,11 +12,9 @@
       <present-top-bar
         :current-index="currentIndex"
         :media-count="items.length"
-        :custom-sort="customSort"
         @cc="ccEnable = !ccEnable"
         @previous="previous()"
         @next="next()"
-        @reset-sort="customSort = false"
         @manage-media="managingMedia = true"
       />
       <v-expand-transition>
@@ -27,11 +25,8 @@
           :media-active="mediaActive"
           :zoom-part="zoomPart"
           :cc-enable="ccEnable"
-          :custom-sort="customSort"
-          :custom-sort-order="customSortOrder"
           @index="setIndex"
           @deactivate="resetDeactivate"
-          @custom-sort="customSort = true"
         />
       </v-expand-transition>
     </v-row>
@@ -42,7 +37,7 @@ import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { basename, dirname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
-import { pathExistsSync, readJsonSync, readdirSync } from 'fs-extra'
+import { pathExistsSync, readdirSync } from 'fs-extra'
 import type { LocalFile } from '~~/types'
 
 const loading = ref(false)
@@ -92,15 +87,18 @@ type MediaItem = {
   stop: boolean
   deactivate: boolean
 }
+
 const mPath = mediaPath()
 const items = reactive(ref<MediaItem[]>([]))
 const watchers = ref<fileWatcher.FSWatcher[]>([])
+
 onBeforeUnmount(() => {
   watchers.value.forEach((watcher) => {
     watcher.close()
   })
 })
-onMounted(() => {
+
+const setItems = () => {
   if (pathExistsSync(join(mPath, date.value))) {
     items.value = readdirSync(join(mPath, date.value))
       .filter((file) => isImage(file) || isVideo(file) || isAudio(file))
@@ -116,11 +114,10 @@ onMounted(() => {
       })
       .sort((a, b) => a.id.localeCompare(b.id))
   }
+}
 
-  customSortOrder.value = readJsonSync(
-    join(mPath, date.value, 'file-order.json'),
-    { throws: false },
-  )
+onMounted(() => {
+  setItems()
 
   watchers.value.push(
     fileWatcher
@@ -151,30 +148,8 @@ onMounted(() => {
           }
         }
       })
-      .on('change', (path, stats) => {
-        if (isImage(path) || isVideo(path) || isAudio(path)) {
-          const cleanName = sanitize(basename(path), true)
-          const index = items.value.findIndex((item) => {
-            return item.id === strip(`mediaitem-${cleanName}`)
-          })
-          if (index !== -1) {
-            items.value = items.value
-              .map((item, i) => {
-                if (i === index) {
-                  return {
-                    id: strip('mediaitem-' + cleanName),
-                    path: join(dirname(path), cleanName),
-                    play: false,
-                    stop: false,
-                    deactivate: false,
-                    size: stats?.size,
-                  }
-                }
-                return item
-              })
-              .sort((a, b) => a.id.localeCompare(b.id))
-          }
-        }
+      .on('change', () => {
+        setItems()
       })
       .on('unlink', (path) => {
         if (isImage(path) || isVideo(path) || isAudio(path)) {
@@ -189,69 +164,6 @@ onMounted(() => {
         }
       }),
   )
-  if (getPrefs('cloud.enable')) {
-    // additional files
-    watchers.value.push(
-      fileWatcher
-        .watch(join(getPrefs('cloud.path'), 'Additional', date.value), {
-          depth: 1,
-          ignorePermissionErrors: true,
-        })
-        .on('add', (additionalFile) => {
-          if (
-            isImage(additionalFile) ||
-            isVideo(additionalFile) ||
-            isAudio(additionalFile)
-          ) {
-            copy(
-              additionalFile,
-              join(mPath, date.value, sanitize(basename(additionalFile), true)),
-            )
-          }
-        })
-        .on('unlink', (additionalFile) => {
-          rm(join(mPath, date.value, sanitize(basename(additionalFile), true)))
-        }),
-    )
-    // hidden files
-    watchers.value.push(
-      fileWatcher
-        .watch(join(getPrefs('cloud.path'), 'Hidden', date.value), {
-          depth: 1,
-          ignorePermissionErrors: true,
-        })
-        .on('add', (hiddenFile) => {
-          rm(join(mPath, date.value, sanitize(basename(hiddenFile), true)))
-        }),
-    )
-    // recurring files
-    watchers.value.push(
-      fileWatcher
-        .watch(join(getPrefs('cloud.path'), 'Recurring'), {
-          depth: 1,
-          ignorePermissionErrors: true,
-        })
-        .on('add', (recurringFile) => {
-          findAll(join(mPath, '*'), {
-            onlyDirectories: true,
-          }).forEach((dateFolder) => {
-            if (
-              isImage(recurringFile) ||
-              isVideo(recurringFile) ||
-              isAudio(recurringFile)
-            ) {
-              copy(
-                recurringFile,
-                join(dateFolder, sanitize(basename(recurringFile), true)),
-              )
-            }
-          })
-        })
-        .on('unlink', (recurringFile) => {
-          rm(findAll(join(mPath, '*', basename(recurringFile))))
-        }),
-    )
-  }
 
   // Auto play first media item
   if (getPrefs<boolean>('media.autoPlayFirst')) {
@@ -273,7 +185,7 @@ const zoomPart = inject(zoomPartKey, ref(false))
 const mediaActive = inject(mediaActiveKey, ref(false))
 watch(mediaActive, (val) => {
   // Enable/disable nav
-  useStatStore().setNavDisabled(val)
+  useStatStore().navDisabled = val
 
   // Reset playback state
   items.value.forEach((item) => {
@@ -324,8 +236,6 @@ useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
     previous()
   }
 })
-const customSort = ref(false)
-const customSortOrder = ref()
 const setIndex = (index: number) => {
   const previousItem = items.value[currentIndex.value] as MediaItem | undefined
   if (previousItem && currentIndex.value !== index) {

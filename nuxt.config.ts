@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 import { platform } from 'os'
 import { join } from 'path'
-import type { PluginOption } from 'vite'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { repository, version } from './package.json'
-import { appLongName } from './src/constants/general'
-import { LOCALES } from './src/constants/lang'
+import { APP_LONG_NAME } from './src/constants/general'
+import { LOCALES, DAYJS_LOCALES } from './src/constants/lang'
+import type { PluginOption } from 'vite'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -22,11 +23,9 @@ if (sentryInit && !process.env.SENTRY_DISABLE) {
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
-      sourcemaps: {
-        assets: ['output'],
-      },
+      sourcemaps: { assets: ['output'] },
       release: {
-        name: `${appLongName.toLowerCase().replace(' ', '-')}@${version}`,
+        name: `${APP_LONG_NAME.toLowerCase().replace(' ', '-')}@${version}`,
         dist: platform().replace('32', ''),
       },
     }),
@@ -43,6 +42,7 @@ export default defineNuxtConfig({
     typeCheck: false,
     tsConfig: { compilerOptions: { moduleResolution: 'bundler' } },
   },
+  css: ['~/assets/css/main.scss'],
   imports: { dirs: ['stores', 'constants'] },
   router: { options: { hashMode: true } },
   sourcemap: { client: false },
@@ -50,6 +50,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     ['@unocss/nuxt', { configFile: './config/uno.config.ts' }],
     '@vueuse/nuxt',
+    'dayjs-nuxt',
     'vuetify-nuxt-module',
     ['@pinia/nuxt', { autoImports: ['defineStore', 'storeToRefs'] }],
     [
@@ -77,31 +78,43 @@ export default defineNuxtConfig({
     types: 'composition',
     detectBrowserLanguage: false,
     vueI18n: './config/i18n.config.ts',
-    compilation: {
-      strictMessage: false,
-      escapeHtml: true,
-    },
+    compilation: { strictMessage: false, escapeHtml: false },
   },
   vuetify: {
     moduleOptions: { prefixComposables: true },
     vuetifyOptions: './config/vuetify.config.ts',
+  },
+  dayjs: {
+    locales: DAYJS_LOCALES,
+    plugins: [
+      'customParseFormat',
+      'duration',
+      'isBetween',
+      'isSameOrBefore',
+      'isoWeek',
+      'localeData',
+      'localizedFormat',
+    ],
+    defaultLocale: 'en',
   },
   vite: {
     root: process.cwd(), // Fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32
     build: {
       sourcemap: false,
       cssCodeSplit: true,
-      target: 'chrome110',
+      target: 'chrome120',
       rollupOptions: {
         // external: ['chokidar'],
       },
     },
     optimizeDeps: {
       exclude: ['@stephen/sql.js'],
+      esbuildOptions: { target: 'chrome120' },
     },
     plugins: vitePlugins,
   },
   nitro: {
+    esbuild: { options: { target: 'chrome120' } },
     output: { publicDir: join(__dirname, 'output') },
   },
   runtimeConfig: {

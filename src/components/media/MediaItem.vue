@@ -92,7 +92,7 @@
         />
       </v-list-item-action>
     </template>
-    <template v-if="!isImage(src)">
+    <template v-if="isAudio(src) || isLongVideo">
       <v-slider
         v-if="active && paused"
         v-model="newProgress"

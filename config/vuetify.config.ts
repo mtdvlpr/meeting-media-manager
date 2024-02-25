@@ -1,16 +1,35 @@
 import { defineVuetifyConfiguration } from 'vuetify-nuxt-module/custom-configuration'
 
+const input = {
+  color: 'primary',
+  variant: 'outlined',
+  density: 'comfortable',
+  hideDetails: 'auto',
+}
+
 export default defineVuetifyConfiguration({
   date: { adapter: 'dayjs' },
-  directives: ['ClickOutside'],
+  directives: true,
   icons: { defaultSet: 'unocss-mdi' },
   defaults: {
-    VBtnToggle: { color: 'primary' },
+    VAlert: { ...input },
+    VAutocomplete: { ...input },
+    VBtnToggle: { color: 'primary', variant: 'outlined' },
+    VCheckbox: { ...input },
+    VCombobox: { ...input, hint: 'Druk op enter om toe te voegen.' },
+    VContainer: { fluid: true },
+    VDatePicker: { color: 'primary', showAdjacentMonths: true },
     VField: { color: 'primary' },
+    VFileInput: { ...input },
+    VOtpInput: { ...input },
     VProgressLinear: { color: 'primary' },
+    VSelect: { ...input },
     VSelectionControl: { color: 'primary' },
-    VSlider: { color: 'primary' },
-    VTabs: { color: 'primary', grow: true },
+    VSlider: { ...input },
+    VSwitch: { ...input },
+    VTabs: { color: 'primary', grow: true, showArrows: true },
+    VTextarea: { rows: 4, ...input },
+    VTextField: { ...input },
   },
   theme: {
     themes: {

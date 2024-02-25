@@ -3,7 +3,7 @@
     <v-icon icon="i-mdi:sort-numeric-variant" />
   </v-col>
   <v-col cols="11" class="d-flex" align-self="center">
-    <form-input v-model="value" :disabled="loading" hide-details="auto" />
+    <v-text-field v-model="value" :disabled="loading" />
   </v-col>
 </template>
 <script setup lang="ts">

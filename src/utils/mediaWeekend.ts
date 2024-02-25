@@ -1,3 +1,4 @@
+import { FOOTNOTE_PAR_NR } from './../constants/general'
 import { pathExists, stat } from 'fs-extra'
 import { join } from 'upath'
 import type { Database } from '@stephen/sql.js'
@@ -10,8 +11,8 @@ import type {
 } from '~~/types'
 
 export async function getWeMedia(date: string) {
-  const { $dayjs } = useNuxtApp()
-  const weDay = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+  const dayjs = useDayjs()
+  const weDay = dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const baseDate = weDay.startOf('week')
 
   // Get week nr from db
@@ -21,7 +22,7 @@ export async function getWeMedia(date: string) {
       database,
       'SELECT FirstDateOffset FROM DatedText',
     ).findIndex((weekItem: any) => {
-      return $dayjs(weekItem.FirstDateOffset.toString(), 'YYYYMMDD').isBetween(
+      return dayjs(weekItem.FirstDateOffset.toString(), 'YYYYMMDD').isBetween(
         baseDate,
         baseDate.add(6, 'days'),
         null,
@@ -91,7 +92,6 @@ export async function getWeMedia(date: string) {
     (video) => !video.TargetParagraphNumberLabel,
   )
 
-  const FOOTNOTE_TAR_PAR = 9999
   const excludeFootnotes = getPrefs<boolean>('media.excludeFootnotes')
 
   const media = executeQuery<MultiMediaItem>(
@@ -139,13 +139,12 @@ export async function getWeMedia(date: string) {
         // assign special number so we know videos are referenced by a footnote
         .map((mediaObj) =>
           mediaObj.TargetParagraphNumberLabel === null
-            ? { ...mediaObj, TargetParagraphNumberLabel: FOOTNOTE_TAR_PAR }
+            ? { ...mediaObj, TargetParagraphNumberLabel: FOOTNOTE_PAR_NR }
             : mediaObj,
         )
         .filter((v) => {
           return (
-            !excludeFootnotes ||
-            v.TargetParagraphNumberLabel! < FOOTNOTE_TAR_PAR
+            !excludeFootnotes || v.TargetParagraphNumberLabel! < FOOTNOTE_PAR_NR
           )
         }),
     )

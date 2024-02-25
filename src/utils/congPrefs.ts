@@ -1,4 +1,3 @@
-import { pathExists, readFile } from 'fs-extra'
 import { join } from 'upath'
 import type {
   ObsPrefs,
@@ -8,7 +7,6 @@ import type {
   MeetingPrefs,
   PrefStore,
   ZoomPrefs,
-  CloudPrefs,
 } from '~~/types'
 
 export function isLocked(key: string) {
@@ -44,29 +42,20 @@ export function isLocked(key: string) {
 export async function forcePrefs(refresh = false) {
   const store = useCongStore()
   const client = store.client
-  const cloudSync = getPrefs('cloud.enable')
-  if (!client && !cloudSync) return null
+  if (!client) return null
   if (!refresh && store.prefs) {
     return store.prefs
   }
 
-  const dir = cloudSync
-    ? join(getPrefs('cloud.path'), 'Settings')
-    : getPrefs<string>('cong.dir')
+  const dir = getPrefs<string>('cong.dir')
   if (!dir) return undefined
 
   try {
     const path = join(dir, 'forcedPrefs.json')
-    if (
-      cloudSync
-        ? await pathExists(path)
-        : store.contents.find(({ filename }) => filename === path)
-    ) {
-      const json = cloudSync
-        ? await readFile(path)
-        : await client?.getFileContents(path, {
-            format: 'text',
-          })
+    if (store.contents.find(({ filename }) => filename === path)) {
+      const json = await client.getFileContents(path, {
+        format: 'text',
+      })
 
       const prefs = JSON.parse(<string>json)
 
@@ -119,10 +108,6 @@ export async function forcePrefs(refresh = false) {
       const newPrefs = {
         app: Object.assign(getPrefs<AppPrefs>('app'), prefs.app ?? {}),
         cong: Object.assign(getPrefs<CongPrefs>('cong'), prefs.cong ?? {}),
-        cloud: Object.assign(
-          getPrefs<CloudPrefs>('cloudSync'),
-          prefs.cloudSync ?? {},
-        ),
         media: Object.assign(getPrefs<MediaPrefs>('media'), prefs.media ?? {}),
         meeting: Object.assign(
           getPrefs<MeetingPrefs>('meeting'),
@@ -130,7 +115,7 @@ export async function forcePrefs(refresh = false) {
         ),
       }
       setAllPrefs(newPrefs)
-      store.setPrefs(JSON.parse(JSON.stringify(forcedPrefs)))
+      store.prefs = JSON.parse(JSON.stringify(forcedPrefs))
     }
   } catch (e: any) {
     error('errorForcedSettingsEnforce', e)

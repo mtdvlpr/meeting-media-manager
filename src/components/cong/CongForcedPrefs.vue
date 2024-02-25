@@ -1,23 +1,22 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-dialog v-model="active" persistent>
+  <v-dialog v-model="active" persistent scrollable>
     <v-card>
       <v-card-title class="justify-center">
         {{ $t('settingsLocked') }}
       </v-card-title>
       <v-divider />
-      <v-card-text class="overflow-auto">
-        <div class="text-caption text-grey-darken-1">
+      <v-card-text>
+        <div class="text-caption">
           {{ $t('settingsLockedExplain') }}
         </div>
-        <v-divider class="my-3"></v-divider>
+        <v-divider class="my-3" />
         <loading-icon v-if="loading" />
         <template v-for="item in forcible" v-else :key="item.key">
           <v-switch
-            v-if="item.value !== null"
             v-model="item.forced"
-            hide-details="auto"
             true-icon="i-mdi:shield-lock"
+            :disabled="saving"
             @update:model-value="change = true"
           >
             <template #label>
@@ -25,12 +24,15 @@
                 <v-tooltip activator="parent" location="top">
                   {{ item.key }}
                 </v-tooltip>
-                <v-chip :color="item.forced ? 'primary' : 'secondary'">{{
-                  $t(item.description)
-                }}</v-chip>
+                <v-chip
+                  :color="item.forced ? 'primary' : 'secondary'"
+                  variant="elevated"
+                >
+                  {{ $t(item.description) }}
+                </v-chip>
               </span>
               <v-chip>
-                {{ item.value }}
+                {{ item.value !== null ? item.value : 'null' }}
               </v-chip>
             </template>
           </v-switch>
@@ -42,7 +44,8 @@
         <v-btn
           color="primary"
           variant="flat"
-          :loading="loading"
+          :loading="saving"
+          :disabled="loading"
           @click="updatePrefs()"
         >
           Save
@@ -52,7 +55,6 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import { writeJSON } from 'fs-extra'
 import { join } from 'upath'
 
 const props = defineProps<{ modelValue: boolean }>()
@@ -93,11 +95,13 @@ const getDescription = (key: string) => {
   if (lastKey === 'password') return 'password'
 
   // OBS
+  if (key === 'app.obs.enable') return 'enableObs'
   if (key.startsWith('app.obs')) {
     return `obs${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
   }
 
   // Zoom
+  if (key === 'app.zoom.enable') return 'enableZoom'
   if (key === 'app.zoom.autoStartTime') return 'minutesBeforeMeeting'
   if (key.startsWith('app.zoom')) {
     return `zoom${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
@@ -109,12 +113,17 @@ const getDescription = (key: string) => {
       return 'mediaLang'
     case 'media.autoPlayFirstTime':
       return 'minutesBeforeMeeting'
+    case 'media.enableMp4Conversion':
+      return 'convertDownloaded'
+    case 'meeting.enableMusicFadeOut':
     case 'meeting.musicFadeOutTime':
     case 'meeting.musicFadeOutType':
-      return 'enableMusicFadeOut'
+      return 'musicFadeOutType'
+    case 'meeting.mwDay':
+    case 'meeting.weDay':
     case 'meeting.mwStartTime':
     case 'meeting.weStartTime':
-      return lastKey.substring(0, 2) + 'Day'
+      return lastKey.substring(0, 2) + 'MeetingDay'
     default:
       return lastKey
   }
@@ -135,14 +144,16 @@ const loading = ref(true)
 onMounted(() => {
   loading.value = false
 })
+
 const change = ref(false)
+const saving = ref(false)
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
-  if (!change.value || (!getPrefs('cloud.enable') && !store.client)) {
+  if (!change.value || !store.client) {
     active.value = false
     return
   }
-  loading.value = true
+  saving.value = true
   const forcedPrefs = {} as any
 
   try {
@@ -166,17 +177,7 @@ const updatePrefs = async () => {
 
     // Update forcedPrefs.json
     log.debug('prefs', JSON.stringify(forcedPrefs))
-    if (getPrefs('cloud.enable')) {
-      try {
-        await writeJSON(
-          join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'),
-          forcedPrefs,
-          { spaces: 2 },
-        )
-      } catch (error) {
-        log.error(error)
-      }
-    } else if (store.client) {
+    if (store.client) {
       await store.client.putFileContents(
         join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
         JSON.stringify(forcedPrefs, null, 2),
@@ -190,7 +191,7 @@ const updatePrefs = async () => {
       join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
     )
   } finally {
-    loading.value = false
+    saving.value = false
     active.value = false
   }
 }

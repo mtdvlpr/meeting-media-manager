@@ -19,7 +19,7 @@
       <v-sheet>
         <v-row style="max-width: 640px">
           <v-col align-self="start" class="d-flex flex-column px-0 ml-4">
-            <form-timestamp
+            <input-timestamp
               v-model="clipped.start"
               :min="originalString.start"
               :max="clipped.end"
@@ -31,8 +31,8 @@
                 </v-tooltip>
                 <v-icon icon="i-mdi:rotate-left" />
               </v-btn>
-            </form-timestamp>
-            <form-timestamp
+            </input-timestamp>
+            <input-timestamp
               v-model="clipped.end"
               :min="clipped.start"
               :max="originalString.end"
@@ -53,12 +53,13 @@
                   }`"
                 />
               </v-btn>
-            </form-timestamp>
+            </input-timestamp>
           </v-col>
         </v-row>
       </v-sheet>
     </v-overlay>
     <v-btn
+      v-if="!isShortVideo"
       size="x-small"
       location="left"
       :rounded="0"
@@ -85,7 +86,7 @@
       }}
     </v-btn>
     <v-btn
-      v-if="ccAvailable"
+      v-if="!isShortVideo && ccAvailable"
       size="x-small"
       :rounded="0"
       variant="flat"

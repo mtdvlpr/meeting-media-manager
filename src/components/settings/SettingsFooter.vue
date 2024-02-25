@@ -94,7 +94,7 @@ const cong = useRouteQuery('cong', '')
 const goBack = async () => {
   log.debug('Go back')
   await remove(join(appPath(), `prefs-${cong.value}.json`))
-  useStatStore().setNavDisabled(false)
+  useStatStore().navDisabled = false
   useRouter().back()
 }
 
@@ -124,8 +124,8 @@ const setShuffleMusicFiles = () => {
   shuffleMusicFiles.value = isSignLanguage()
     ? join(pPath, '..', props.prefs.media.lang, 'sjj', '**', '*.mp4')
     : props.prefs.media.lang === 'E'
-    ? ''
-    : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
+      ? ''
+      : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
 }
 
 const calcCache = async () => {
@@ -139,8 +139,7 @@ const calcCache = async () => {
       try {
         size +=
           (await getFolderSize.loose(folder, { ignore: /Recurring/ })) /
-          1000 /
-          1000
+          BYTES_IN_MB
       } catch (e) {
         log.error(folder, e)
       }

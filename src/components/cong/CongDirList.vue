@@ -1,5 +1,5 @@
 <template>
-  <TreeView :config="config" :nodes="tree" class="cong-treeview">
+  <tree-view :config="config" :nodes="tree" class="cong-treeview">
     <template #after-input="{ node }">
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
@@ -10,10 +10,14 @@
         />
       </div>
     </template>
-  </TreeView>
+  </tree-view>
 </template>
 <script setup lang="ts">
+import 'vue3-treeview/dist/style.css'
+// @ts-expect-error: cannot find declaration file
+import TreeView from 'vue3-treeview'
 import type { CongFile } from '~~/types'
+
 type TreeObj = Record<
   string,
   {
@@ -26,23 +30,30 @@ type TreeObj = Record<
 
 const props = defineProps<{
   contents: CongFile[]
+  disabled?: boolean
 }>()
+
 const emit = defineEmits<{
   open: [filename: string]
 }>()
+
 const tree = ref({})
+
 onMounted(() => {
   setTree()
 })
+
 watch(
   () => props.contents,
   () => {
     setTree()
   },
 )
+
 const config = computed(() => {
   return {
     roots: props.contents.map((f) => f.filename),
+    disabled: props.disabled,
   }
 })
 
@@ -53,6 +64,7 @@ const setTree = () => {
   })
   tree.value = treeObj
 }
+
 const addToTree = (treeObj: TreeObj, file: CongFile) => {
   treeObj[file.filename] = {
     text: file.basename,

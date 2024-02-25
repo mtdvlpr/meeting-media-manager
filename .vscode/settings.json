@@ -16,6 +16,7 @@
   "cSpell.ignorePaths": [
     ".github/workflows/*",
     ".vscode/*",
+    "src/constants/lang.ts",
     "src/locales/*",
     "!src/locales/en.json",
     "LICENSE.md",
@@ -46,6 +47,7 @@
     "iasn",
     "icns",
     "iconify",
+    "Iloko",
     "Italiano",
     "jfif",
     "jszip",
@@ -61,6 +63,7 @@
     "magyar",
     "mchaplyak",
     "mediaitem",
+    "meetingsdk",
     "meps",
     "mtdvlpr",
     "multilanguage",
@@ -72,6 +75,7 @@
     "nuxt",
     "nuxtjs",
     "olddn",
+    "Pangasinan",
     "panzoom",
     "panzoomchange",
     "pilcrow",
@@ -109,6 +113,10 @@
     "xvfb",
     "yeartext",
     "zoomus",
+    "Ελλάδα",
+    "Ελληνικά",
+    "Νότια",
+    "Ρομανί",
     "русский",
     "українська"
   ]

@@ -1,6 +1,6 @@
 <template>
   <div id="media-list-container" style="width: 100%">
-    <song-picker ref="songPicker" v-model="song" class="ma-4" clearable />
+    <input-song ref="songPicker" v-model="song" class="ma-4" clearable />
     <v-expand-transition>
       <v-list v-if="song" class="ma-4">
         <media-item
@@ -23,8 +23,8 @@
             sections.livingItems.value,
           ]
         : isWeDay
-        ? [sections.publicTalkItems.value, sections.wtItems.value]
-        : [sections.mediaItems.value]"
+          ? [sections.publicTalkItems.value, sections.wtItems.value]
+          : [sections.mediaItems.value]"
       :key="section"
     >
       <template v-if="section && section.length > 0">
@@ -129,8 +129,6 @@ type MediaItem = {
 }
 const props = defineProps<{
   items: MediaItem[]
-  customSort: boolean
-  customSortOrder: object | undefined
   zoomPart: boolean
   ccEnable: boolean
 }>()
@@ -212,22 +210,7 @@ watch(
     setItems(props.items)
   },
 )
-watch(
-  () => props.customSort,
-  (customSort) => {
-    if (!customSort) defaultOrder(props.items)
-  },
-)
-watch(
-  () => props.customSortOrder,
-  (val) => {
-    if (val) {
-      setItems(props.items)
-    } else {
-      defaultOrder(props.items)
-    }
-  },
-)
+
 const saveFileOrder = async () => {
   const domSections = document.querySelectorAll<HTMLElement>('[data-section]')
   const combinedItems: Record<string, any[]> = {}

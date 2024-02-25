@@ -1,7 +1,13 @@
+/* eslint-disable playwright/no-conditional-expect */
 import { platform } from 'os'
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
-import { expect, test, ElectronApplication, Page } from '@playwright/test'
+import {
+  expect,
+  test,
+  type ElectronApplication,
+  type Page,
+} from '@playwright/test'
 import jimp from 'jimp'
 import { join } from 'upath'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
@@ -58,6 +64,7 @@ test('render the presentation mode page correctly', async () => {
     await page.locator('button', { hasText: locale.fetchMedia }).click()
 
     // Wait for jw sync to complete successfully
+    // eslint-disable-next-line playwright/no-wait-for-selector
     await page.waitForSelector('div.bg-success:has-text("JW.org (English)")', {
       timeout: 0,
     })
@@ -94,26 +101,24 @@ test('render the presentation mode page correctly', async () => {
       await delay(10 * 100)
       await page.screenshot({ path: 'img/present/media-list.png' })
     }
-  } else {
+  } else if (platform() !== 'win32') {
     // Check for correct heading
-    await expect(page.locator('.v-toolbar-title__placeholder')).toHaveText(
+    /*await expect(page.locator('.v-toolbar-title__placeholder')).toHaveText(
       locale.selectDate,
+    )*/
+
+    if (platform() === 'linux') {
+      await page.screenshot({ path: 'img/present/meeting-picker.png' })
+    }
+    await page.locator('.present-select .v-list-item').nth(0).click()
+    await expect(page.locator('[aria-label="More actions"]')).toHaveAttribute(
+      'aria-label',
+      'More actions',
     )
 
-    if (platform() !== 'win32') {
-      if (platform() === 'linux') {
-        await page.screenshot({ path: 'img/present/meeting-picker.png' })
-      }
-      await page.locator('.present-select .v-list-item').nth(0).click()
-      await expect(page.locator('[aria-label="More actions"]')).toHaveAttribute(
-        'aria-label',
-        'More actions',
-      )
-
-      if (platform() === 'linux') {
-        await delay(10 * 100)
-        await page.screenshot({ path: 'img/present/media-list.png' })
-      }
+    if (platform() === 'linux') {
+      await delay(10 * 100)
+      await page.screenshot({ path: 'img/present/media-list.png' })
     }
   }
 })

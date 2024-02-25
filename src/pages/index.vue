@@ -3,7 +3,7 @@
   <div class="cong-select">
     <v-app-bar>
       <v-app-bar-title>
-        {{ $t('selectCong') }}
+        {{ $t('congregationSelect') }}
       </v-app-bar-title>
     </v-app-bar>
     <v-row no-gutters justify="start" align="start" class="pa-4">
@@ -28,9 +28,9 @@
             </template>
           </v-list-item>
           <v-list-item
-            prepend-icon="i-mdi:plus"
+            prepend-icon="i-mdi:add"
             :title="$t('congregationAdd')"
-            @click="createCong()"
+            @click="createCong"
           />
         </v-list>
       </v-col>
@@ -43,8 +43,7 @@ import { basename, join } from 'upath'
 import { pathExists } from 'fs-extra'
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
-import * as fileWatcher from 'chokidar'
-import type { LocaleObject } from '#i18n'
+import type { LocaleObject } from '@nuxtjs/i18n'
 import type { CongPrefs, ObsPrefs, Theme, ZoomPrefs } from '~~/types'
 
 interface Cong {
@@ -73,7 +72,7 @@ const loadCongs = async () => {
 }
 
 onMounted(() => {
-  useStatStore().setNavDisabled(true)
+  useStatStore().navDisabled = true
   if (!cong.value) {
     setTheme(prefersDark.value ? 'dark' : 'light')
   }
@@ -82,6 +81,7 @@ onMounted(() => {
 
 const createCong = () => {
   loading.value = true
+  // eslint-disable-next-line no-magic-numbers
   const id = Math.random().toString(36).substring(2, 15)
   initPrefs('prefs-' + id, true)
   loading.value = false
@@ -108,11 +108,6 @@ const removeCong = (path: string) => {
   rm(path)
   loadCongs()
 }
-
-const watchers = ref<fileWatcher.FSWatcher[]>([])
-onBeforeUnmount(() => {
-  watchers.value.forEach((w) => w.close())
-})
 
 const { fallbackLocale, locales } = useI18n()
 const { online } = storeToRefs(useStatStore())
@@ -146,7 +141,7 @@ const initPrefs = (name: string, isNew = false) => {
     },
   })
 
-  useStatStore().setNavDisabled(false)
+  useStatStore().navDisabled = false
 
   const locale = (locales.value as LocaleObject[]).find((l) => l.code === lang)
   $dayjs.locale(locale?.dayjs ?? lang ?? 'en')
@@ -208,22 +203,19 @@ const initPrefs = (name: string, isNew = false) => {
   // If all cong fields are filled in, try to connect to the server
   connectWebDAV()
 
-  // Connect to cloud sync if enabled
-  connectCloudSync()
-
   // Connect to OBS depending on prefs
-  useObsStore().clear()
+  useObsStore().$reset()
   const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
   if (enable && port && password) {
     getScenes()
   }
 
   // Regular Cleanup
-  cleanup()
+  cleanup(cong.value)
 }
 
 const connectWebDAV = async () => {
-  useCongStore().clear()
+  useCongStore().$reset()
   if (!getPrefs<boolean>('app.offline')) {
     const { server, username, password, dir } = getPrefs<CongPrefs>('cong')
     if (server && username && password && dir) {
@@ -234,79 +226,6 @@ const connectWebDAV = async () => {
         warn('errorWebdavLs', { identifier: dir })
       }
     }
-  }
-
-  watchers.value.push(
-    fileWatcher
-      .watch(
-        join(
-          appPath(),
-          `custom-background-image-${getPrefs<string>(
-            'app.congregationName',
-          )}*`,
-        ),
-        {
-          depth: 1,
-          ignorePermissionErrors: true,
-        },
-      )
-      .on('add', () => {
-        refreshBackgroundImgPreview()
-      })
-      .on('change', () => {
-        refreshBackgroundImgPreview()
-      })
-      .on('unlink', () => {
-        refreshBackgroundImgPreview()
-      }),
-  )
-}
-
-const connectCloudSync = () => {
-  if (getPrefs('cloud.enable') && getPrefs('cloud.path')) {
-    // custom background image
-    watchers.value.push(
-      fileWatcher
-        .watch(
-          join(
-            getPrefs('cloud.path'),
-            'Settings',
-            `custom-background-image-${getPrefs<string>(
-              'app.congregationName',
-            )}*`,
-          ),
-          {
-            depth: 1,
-            ignorePermissionErrors: true,
-          },
-        )
-        .on('add', (backgroundImg) => {
-          copy(backgroundImg, join(appPath(), basename(backgroundImg)))
-        })
-        .on('change', (backgroundImg) => {
-          copy(backgroundImg, join(appPath(), basename(backgroundImg)))
-        })
-        .on('unlink', (backgroundImg) => {
-          rm(join(appPath(), basename(backgroundImg)))
-        }),
-    )
-    // enforced settings
-    watchers.value.push(
-      fileWatcher
-        .watch(join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'), {
-          depth: 1,
-          ignorePermissionErrors: true,
-        })
-        .on('add', () => {
-          forcePrefs()
-        })
-        .on('change', () => {
-          forcePrefs()
-        })
-        .on('unlink', () => {
-          forcePrefs()
-        }),
-    )
   }
 }
 
@@ -320,7 +239,7 @@ const initMediaWindow = () => {
   } else if (!enableMediaDisplayButton && presentStore.mediaScreenInit) {
     toggleMediaWindow('close')
   }
-  useStatStore().setShowMediaPlayback(enableMediaDisplayButton)
+  useStatStore().showMediaPlayback = enableMediaDisplayButton
 }
 
 const checkLangs = async (isNew: boolean) => {

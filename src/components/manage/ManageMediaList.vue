@@ -7,9 +7,23 @@
   >
     <v-card>
       <v-card-text>
-        <form-input v-model="edit.newName" :suffix="edit.ext" />
+        <v-text-field
+          v-model="edit.newName"
+          :suffix="edit.ext"
+          :disabled="renaming"
+        />
       </v-card-text>
       <v-card-actions>
+        <v-spacer />
+        <v-btn
+          color="red"
+          variant="text"
+          aria-label="cancel"
+          :disabled="renaming"
+          @click="edit = null"
+        >
+          {{ $t('cancel') }}
+        </v-btn>
         <v-btn
           :loading="renaming"
           color="blue-darken-1"
@@ -18,14 +32,6 @@
           @click="saveNewName()"
         >
           {{ $t('save') }}
-        </v-btn>
-        <v-btn
-          color="red"
-          variant="text"
-          aria-label="cancel"
-          @click="edit = null"
-        >
-          {{ $t('cancel') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -57,7 +63,6 @@ const props = defineProps<{
   newFile: VideoFile | null
   newFiles: (LocalFile | VideoFile)[]
   prefix: string
-  // showPrefix?: boolean
   showInput?: boolean
 }>()
 const emit = defineEmits<{ (e: 'refresh'): void }>()
@@ -133,13 +138,7 @@ const saveNewName = async () => {
   renaming.value = true
   const cleanName = sanitize(edit.value.newName + edit.value.ext, true)
   rename(
-    join(
-      getPrefs('cloud.enable')
-        ? join(getPrefs('cloud.path'), 'Additional')
-        : mediaPath(),
-      props.date,
-      edit.value.safeName,
-    ),
+    join(mediaPath(), props.date, edit.value.safeName),
     edit.value.safeName,
     cleanName,
   )

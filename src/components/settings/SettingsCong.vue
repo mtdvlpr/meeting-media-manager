@@ -3,13 +3,13 @@
     ref="congForm"
     v-model="valid"
     class="text-left"
-    @submit.prevent="submit()"
+    @submit.prevent="submit"
   >
     <cong-forced-prefs v-model="forcingPrefs" />
 
-    <v-btn color="primary" class="mb-4">
-      {{ $t('server') }}
-      <v-menu activator="parent" location="bottom">
+    <v-btn color="primary" class="mb-4" :disabled="loading">
+      {{ $t('hostname') }}
+      <v-menu activator="parent" location="bottom" :disabled="loading">
         <v-list>
           <v-list-item
             v-for="(host, index) in hosts"
@@ -21,25 +21,25 @@
         </v-list>
       </v-menu>
     </v-btn>
-    <form-input
+    <input-field
       id="cong.server"
       v-model="cong.server"
-      :label="$t('server')"
+      :label="$t('hostname')"
       prefix="https://"
       :rules="[!complete || error !== 'host' || !online]"
       @blur="submit()"
-      @keydown.enter.prevent="submit()"
+      @keydown.enter.prevent="submit"
     />
-    <form-input
+    <input-field
       id="cong.username"
       v-model="cong.username"
       :label="$t('username')"
       :required="!!cong.server"
       :rules="[!complete || error !== 'credentials']"
       @blur="submit()"
-      @keydown.enter.prevent="submit()"
+      @keydown.enter.prevent="submit"
     />
-    <form-input
+    <input-field
       id="cong.password"
       v-model="cong.password"
       field="password"
@@ -47,45 +47,55 @@
       :required="!!cong.server"
       :rules="[!complete || error !== 'credentials']"
       @blur="submit()"
-      @keydown.enter.prevent="submit()"
+      @keydown.enter.prevent="submit"
     />
     <v-col class="d-flex pa-0 pb-2 align-center">
-      <form-input
+      <input-field
         id="cong.dir"
         v-model="cong.dir"
         :label="$t('webdavFolder')"
         :required="!!cong.server"
         :rules="[!complete || error !== 'dir']"
-        hide-details="auto"
         @blur="submit()"
-        @keydown.enter.prevent="submit()"
+        @keydown.enter.prevent="submit"
       />
       <v-btn
-        class="ml-2"
-        icon
         :color="
           online ? (error === 'success' ? 'success' : 'primary') : 'warning'
         "
+        icon="i-mdi:cloud-check"
         :loading="loading"
         :disabled="!complete"
-        @click="submit()"
-      >
-        <v-icon icon="i-mdi:cloud-check" />
-      </v-btn>
+        class="ml-2"
+        @click="submit"
+      />
     </v-col>
     <template v-if="client">
-      <v-btn v-if="cong.dir !== '/'" class="mb-2" @click="moveDirUp()">
+      <v-btn
+        v-if="cong.dir !== '/'"
+        color="secondary"
+        :disabled="loading"
+        class="mb-2"
+        @click="moveDirUp"
+      >
         {{ $t('webdavFolderUp') }}
       </v-btn>
-      <cong-dir-list :contents="contentsTree" @open="openDir($event)" />
+      <cong-dir-list
+        :contents="contentsTree"
+        :disabled="loading"
+        @open="openDir($event)"
+      />
       <v-col cols="12" class="d-flex px-0">
         <v-col class="text-left pl-0" align-self="center">
           {{ $t('settingsLocked') }}
         </v-col>
         <v-col class="text-right pr-0">
-          <v-btn icon color="primary" @click="forcingPrefs = true">
-            <v-icon icon="i-mdi:cloud-lock-open" />
-          </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="loading"
+            icon="i-mdi:cloud-lock-open"
+            @click="forcingPrefs = true"
+          />
         </v-col>
       </v-col>
     </template>
@@ -121,7 +131,7 @@ const complete = computed(() => {
 watch(complete, (val) => {
   if (!val) {
     error.value = ''
-    store.clear()
+    store.$reset()
   }
 })
 

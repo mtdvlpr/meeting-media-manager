@@ -1,4 +1,4 @@
-import type { LocaleObject } from '#i18n'
+import type { LocaleObject } from '@nuxtjs/i18n'
 
 export function translate(word: string, fallback?: string): string {
   const mediaLang = getPrefs<string>('media.lang')

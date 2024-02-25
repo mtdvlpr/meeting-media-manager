@@ -1,34 +1,21 @@
 <template>
-  <div>
+  <v-container>
     <action-preview
       v-if="action"
+      model-value
       :text="text(action)"
       :icon="icon(action)"
       @abort="action = ''"
       @perform="execute(action)"
     />
-    <v-app-bar>
-      <v-app-bar-title>{{ $t('plannedMedia') }}</v-app-bar-title>
-      <progress-bar
-        :current="relativeDownloadProgress"
-        :total="totalProgress"
-      />
-      <template #extension>
-        <v-tabs v-model="currentWeek" grow>
-          <v-tab v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
-            {{ w.label }}
-          </v-tab>
-        </v-tabs>
-      </template>
-    </v-app-bar>
-    <v-row no-gutters justify="center" class="pa-4">
+    <v-row justify="center">
       <v-window v-model="currentWeek">
         <v-window-item v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
           <v-col cols="12">
             <home-week-tiles
               :base-date="baseDate"
-              :day-colors="dayColors"
-              :recurring-color="recurringColor"
+              :days="dayColors"
+              :recurring="recurringColor"
             />
             <home-feature-tiles
               :jw="jwSyncColor"
@@ -60,7 +47,7 @@
         </v-btn>
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 <script setup lang="ts">
 import { fileURLToPath, pathToFileURL } from 'url'
@@ -70,11 +57,10 @@ import { basename, join } from 'upath'
 import type { AppPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
 
 useHead({ title: 'Home' })
-const { $dayjs } = useNuxtApp()
+definePageMeta({ layout: 'home' })
+
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
-// const shuffleEnabled = getPrefs<boolean>('meeting.enableMusicButton')
-// const presentModeEnabled = getPrefs<boolean>('media.enableMediaDisplayButton')
 
 const statStore = useStatStore()
 const { initialLoad } = storeToRefs(statStore)
@@ -99,12 +85,12 @@ onMounted(() => {
   if (initialLoad.value && getPrefs<boolean>('app.autoStartSync')) {
     action.value = 'startMediaSync'
   }
-  statStore.setInitialLoad(false)
+  statStore.initialLoad = false
 })
 
 // Dates
 const now = getNow()
-const currentWeek = useNumberQuery('week', $dayjs().isoWeek())
+const currentWeek = inject(currentWeekKey, ref(0))
 const {
   baseDate,
   mwDay,
@@ -130,31 +116,10 @@ const weekLength = computed(() => {
   return days
 })
 
-const upcomingWeeks = computed(() => {
-  const weeks: { iso: number; label: string }[] = []
-  const dateFormat = getPrefs<string>('app.outputFolderDateFormat')
-  if (!dateFormat) {
-    return []
-  }
-
-  for (let i = 0; i < 5; i++) {
-    const week = $dayjs().add(i, 'weeks')
-    const iso = week.isoWeek()
-    const label =
-      week
-        .startOf('week')
-        .format(
-          `D${
-            week.startOf('week').month() !== week.endOf('week').month()
-              ? ' MMM'
-              : ''
-          }`,
-        ) + ` - ${week.endOf('week').format('D MMM')}`
-    weeks.push({ iso, label })
-  }
-
-  return weeks
-})
+const upcomingWeeks = inject(
+  upcomingWeeksKey,
+  computed(() => []),
+)
 
 // Colors
 const defaultColor = 'secondary'
@@ -224,7 +189,7 @@ const startMediaSync = async (dryrun = false) => {
           ignore: [join(mPath, 'Recurring')],
           onlyDirectories: true,
         }).filter((dir: string) => {
-          const date = $dayjs(
+          const date = useDayjs()(
             basename(dir),
             getPrefs<string>('app.outputFolderDateFormat'),
           )
@@ -315,7 +280,7 @@ const startMediaSync = async (dryrun = false) => {
   }
 }
 
-const { totalProgress, setProgress, relativeDownloadProgress } = useProgress()
+const setProgress = inject(setProgressKey)
 const syncJWorgMedia = async (dryrun = false) => {
   statStore.startPerf({ func: 'syncJWorgMedia', start: performance.now() })
   jwSyncColor.value = 'warning'
