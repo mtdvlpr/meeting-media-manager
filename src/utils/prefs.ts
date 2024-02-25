@@ -587,7 +587,7 @@ export async function getCongPrefs() {
         id: basename(file, '.json').replace('prefs-', ''),
         name:
           // @ts-expect-error: 'app.congregationName' is not defined as a key of PrefStore
-          prefs.app.congregationName ?? (prefs.congregationName as string),
+          prefs.app?.congregationName ?? (prefs.congregationName as string),
         path: file,
       }
     })

@@ -33,7 +33,7 @@ app.setPath(
   'userData',
   join(
     app.getPath('appData'),
-    appLongName.toLowerCase().replace(' ', '-') + '-test',
+    appLongName.toLowerCase().replaceAll(' ', '-') + '-test',
   ),
 )
 
@@ -42,7 +42,7 @@ if (isDev) {
     'userData',
     join(
       app.getPath('appData'),
-      appLongName.toLowerCase().replace(' ', '-') + '-dev',
+      appLongName.toLowerCase().replaceAll(' ', '-') + '-dev',
     ),
   )
 }

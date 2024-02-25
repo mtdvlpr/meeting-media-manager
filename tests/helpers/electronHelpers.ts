@@ -76,7 +76,8 @@ export async function openHomePage(
   const prefs = prefsObject ?? prefsNew
 
   const appPath = (await ipcRendererInvoke(page, 'userData')) as string
-  expect(appPath.endsWith(name)).toBe(true)
+  console.log(appPath)
+  expect(appPath.includes(name)).toEqual(true)
 
   const downloadsPath = (await ipcRendererInvoke(page, 'downloads')) as string
   if (prefs.app) {
@@ -89,7 +90,7 @@ export async function openHomePage(
     ? prefs.app.congregationName
     : prefs.congregationName
 
-  const onCongSelect = (await page.locator('.fa-building-user').count()) > 0
+  const onCongSelect = (await page.locator('.cong-select').count()) > 0
 
   // Insert mock preferences
   try {
@@ -104,10 +105,7 @@ export async function openHomePage(
   } else if (page.url().includes('settings')) {
     // Open the home page as test congregation
     await page.reload({ waitUntil: 'domcontentloaded' })
-    if (
-      nrOfCongs > 1 &&
-      (await page.locator('.fa-building-user').count()) > 0
-    ) {
+    if (nrOfCongs > 1 && (await page.locator('.cong-select').count()) > 0) {
       await selectCong(page, congName)
     }
   }

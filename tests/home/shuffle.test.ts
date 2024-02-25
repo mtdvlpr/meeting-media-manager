@@ -61,7 +61,6 @@ test('shuffle button works correctly', async () => {
   await shuffleBtn.click()
 
   // Wait for stop icon to appear
-  // eslint-disable-next-line playwright/no-wait-for-selector
   await page.waitForSelector('.fa-stop')
   await delay(4 * MS_IN_SEC)
 
