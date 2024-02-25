@@ -19,6 +19,7 @@ mac:
     target: dmg
     arch: universal
   publish: github
+  notarize: false
 linux:
   icon: build/icons/main
   target: AppImage
@@ -32,6 +33,7 @@ win:
       - x64
       - ia32
   publish: github
+  signAndEditExecutable: false
 nsis:
   oneClick: false
   artifactName: meeting-media-manager-${version}-${arch}.${ext}
