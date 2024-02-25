@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: 'package.json'
           cache: 'yarn'
@@ -41,7 +41,7 @@ jobs:
           yarn lint
       - name: Cancel workflow
         if: failure()
-        uses: andymckay/cancel-action@0.3
+        uses: andymckay/cancel-action@0.4
 
   test:
     uses: ./.github/workflows/build.yml
