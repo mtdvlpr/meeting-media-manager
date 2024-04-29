@@ -10,11 +10,11 @@ export async function getSongs() {
       pubSymbol: store.songPub,
       format: 'MP4',
     })
-  ).filter((song) => song.track <= NR_OF_KINGDOM_SONGS)
+  ).filter((song) => song.track < KINGDOM_SONGS_MAX)
 
   const fallbackLang = getPrefs<string>('media.langFallback')
 
-  if (fallbackLang && result.length < NR_OF_KINGDOM_SONGS) {
+  if (fallbackLang && result.length < store.nrOfSongs) {
     const fallback = await getMediaLinks({
       pubSymbol: store.songPub,
       format: 'MP4',
@@ -23,7 +23,7 @@ export async function getSongs() {
 
     fallback.forEach((song) => {
       if (
-        song.track <= NR_OF_KINGDOM_SONGS &&
+        song.track <= store.nrOfSongs &&
         !result.find((s) => s.track === song.track)
       ) {
         result.push(song)
@@ -167,7 +167,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
             })
           ).filter(
             (item) =>
-              item.track <= NR_OF_KINGDOM_SONGS &&
+              item.track < store.nrOfSongs &&
               extname(item.url) === `.${mediaFormat}`,
           )
         : findAll(

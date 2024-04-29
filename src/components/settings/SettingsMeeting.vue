@@ -157,6 +157,7 @@ const emit = defineEmits<{
 const { $dayjs } = useNuxtApp()
 const { appOnline } = useOnline()
 const meetingForm = ref<VFormRef | null>()
+const { nrOfSongs } = storeToRefs(useMediaStore())
 const { prefs: meeting } = usePrefs<MeetingPrefs>('meeting', emit)
 const isTuesday = (date: Date) => $dayjs(date).day() === 2
 const meetingKeys: { day: keyof MeetingPrefs; time: keyof MeetingPrefs }[] = [
@@ -229,7 +230,7 @@ const setShuffleMusicCached = async () => {
   } catch (e) {
     log.error(e)
   }
-  cached.value = matchingFiles === NR_OF_KINGDOM_SONGS
+  cached.value = matchingFiles === nrOfSongs.value
 }
 const cached = ref(false)
 watch(cached, (val) => {
@@ -267,7 +268,7 @@ const processed = ref(0)
 const setProgress = inject(setProgressKey, () => {})
 const downloadSong = async (song: VideoFile) => {
   await downloadIfRequired({ file: song })
-  setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)
+  setProgress(++processed.value, nrOfSongs.value, true)
 }
 
 const status = ref('')
@@ -281,11 +282,13 @@ const downloadShuffleMusic = async () => {
   const isSign = isSignLanguage()
 
   try {
-    const songs = (await getMediaLinks({
-      pubSymbol: isSign ? 'sjj' : 'sjjm',
-      format: isSign ? 'MP4' : 'MP3',
-      lang: isSign ? props.prefs.media.lang : 'E',
-    })) as VideoFile[]
+    const songs = (
+      await getMediaLinks({
+        pubSymbol: isSign ? 'sjj' : 'sjjm',
+        format: isSign ? 'MP4' : 'MP3',
+        lang: isSign ? props.prefs.media.lang : 'E',
+      })
+    ).filter((song) => song.track < KINGDOM_SONGS_MAX) as VideoFile[]
 
     const promises: Promise<void>[] = []
 

@@ -3,6 +3,7 @@ import type { MeetingFile, ShortJWLang } from '~~/types'
 
 interface MediaStore {
   songPub: string
+  nrOfSongs: number
   ffMpeg: boolean
   mediaLang: ShortJWLang | null
   fallbackLang: ShortJWLang | null
@@ -18,6 +19,7 @@ interface MediaStore {
 export const useMediaStore = defineStore('media', {
   state: (): MediaStore => ({
     songPub: 'sjjm', // The song publication (sjj for sign language)
+    nrOfSongs: 158, // The number of songs in the song publication
     ffMpeg: false, // Whether FFmpeg has been initialized
     musicFadeOut: '', // The fade out time for shuffle music
     mediaLang: null, // The media language object
@@ -29,6 +31,9 @@ export const useMediaStore = defineStore('media', {
   actions: {
     setProgress({ key, promise }: { key: string; promise: Promise<string> }) {
       this.progress = this.progress.set(key, promise)
+    },
+    setNrOfSongs(nrOfSongs: number) {
+      this.nrOfSongs = nrOfSongs
     },
     setDownloadProgress({
       key,
