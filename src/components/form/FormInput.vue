@@ -244,7 +244,11 @@ const formattedToNumber = (val: string) => {
 const updateSlider = (val: string) => {
   if (/^[0-1][0-9]:[0-9][0-9]$/.test(val)) {
     const num = formattedToNumber(val)
-    if (num >= 1 && num <= (typeof props.max === 'number' ? props.max : 15)) {
+    const DEFAULT_MAX = 15
+    if (
+      num >= 1 &&
+      num <= (typeof props.max === 'number' ? props.max : DEFAULT_MAX)
+    ) {
       emit('update:modelValue', formattedToNumber(val))
     }
   }

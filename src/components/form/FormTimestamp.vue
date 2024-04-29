@@ -153,7 +153,6 @@ const maxMs = computed(() => {
 // Valid
 const validHours = computed(() => {
   if (!hours.value) return false
-  console.log('hours', hours.value)
   return +hours.value >= minHours.value && +hours.value <= maxHours.value
 })
 
@@ -188,10 +187,6 @@ watch(valid, (val) => {
 })
 
 const setValue = (val: string) => {
-  console.log('h', hours.value)
-  console.log('m', minutes.value)
-  console.log('s', seconds.value)
-  console.log('ms', ms.value)
   if (isTimestamp(val)) {
     const [h, m, s] = val.split(':')
     hours.value = h
@@ -202,10 +197,6 @@ const setValue = (val: string) => {
     resetValue()
     handleChange()
   }
-  console.log('h', hours.value)
-  console.log('m', minutes.value)
-  console.log('s', seconds.value)
-  console.log('ms', ms.value)
 }
 
 const resetValue = () => {
